@@ -72,7 +72,7 @@
                             <li><a href="/user/password_pin"><i class="fa fa-key"></i> Password/Passcode</a></li>
                         </ul>
                     </li>
-                    <li><a href="#"><i class="fa fa-money-bill"></i> <span>Hospital</span></a></li>
+                    <li><a href="/hospital/manage"><i class="fa fa-money-bill"></i> <span>Hospital</span></a></li>
                     <li><a href="#"><i class="fa fa-users"></i> <span>Employee</span></a></li>
                     <li><a href="#"><i class="fa fa-box"></i> <span>Item</span></a></li>
                     <li class="submenu">
