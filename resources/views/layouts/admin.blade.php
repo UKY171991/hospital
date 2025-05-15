@@ -73,7 +73,7 @@
                         </ul>
                     </li>
                     <li><a href="/hospital/manage"><i class="fa fa-money-bill"></i> <span>Hospital</span></a></li>
-                    <li><a href="#"><i class="fa fa-users"></i> <span>Employee</span></a></li>
+                    <li><a href="/employee/manage"><i class="fa fa-users"></i> <span>Employee</span></a></li>
                     <li><a href="#"><i class="fa fa-box"></i> <span>Item</span></a></li>
                     <li class="submenu">
                         <a href="#"><i class="fa fa-cogs"></i> <span>Setup</span> <span class="menu-arrow"></span></a>

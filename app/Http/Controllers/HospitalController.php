@@ -20,6 +20,10 @@ class HospitalController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+        // Set default values for required fields if not present
+        $data['userid'] = $data['userid'] ?? 'admin';
+        $data['password'] = $data['password'] ?? 'password';
+        $data['passcode'] = $data['passcode'] ?? '1234';
         foreach(['logo','signature','stamp','payment_qr'] as $fileField) {
             if ($request->hasFile($fileField)) {
                 $data[$fileField] = $request->file($fileField)->store('uploads', 'public');

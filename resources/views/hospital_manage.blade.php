@@ -46,7 +46,7 @@
                                 <td>{{ $hospital->pan_no }}</td>
                                 <td>{{ $hospital->address }}</td>
                                 <td>
-                                    <a href="#" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
+                                    <a href="{{ route('hospital.edit', $hospital->id) }}" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
                         @endforeach
