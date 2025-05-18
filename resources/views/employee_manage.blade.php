@@ -28,7 +28,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {{-- @foreach($employees as $index => $employee)
+                        @foreach($employees as $index => $employee)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
@@ -54,7 +54,7 @@
                                     <a href="#" class="btn btn-sm btn-success"><i class="fa fa-print"></i></a>
                                 </td>
                             </tr>
-                        @endforeach --}}
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
