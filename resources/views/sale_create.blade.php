@@ -8,6 +8,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Add/Update Sale</h6>
         </div>
         <div class="card-body">
+            <button type="button" class="btn btn-warning mb-3" id="static_test_modal_button">Test Open Modal (Static Button)</button> <!-- STATIC TEST BUTTON -->
             <form action="{{ route('sale.store') }}" method="POST">
                 @csrf
                 <div class="row">
@@ -125,37 +126,45 @@
 $(document).ready(function() {
     // Check 1: Is Bootstrap's Modal class available?
     if (typeof bootstrap === 'undefined' || typeof bootstrap.Modal === 'undefined') {
-        console.error('Bootstrap Modal class is not available. Check Bootstrap JS inclusion in layouts/admin.blade.php.');
-        alert('Critical Error: Bootstrap Modal functionality is not loaded. Please check the browser console for details.');
+        console.error('CRITICAL: Bootstrap Modal class is NOT available. Check Bootstrap JS inclusion and ensure no conflicts.');
+        alert('CRITICAL ERROR: Bootstrap JavaScript is not loaded correctly. The modal functionality will not work. Please check the browser console for details.');
         // Disable buttons that trigger modals as a precaution
-        $('.browse-items-btn').prop('disabled', true).text('Modal JS Error');
-        return; // Stop further execution of this script if Bootstrap Modal is not found
+        $('.browse-items-btn, #static_test_modal_button').prop('disabled', true).text('Modal JS Error');
+        return; // Stop further execution
     }
+    console.log('Bootstrap Modal class IS available.');
 
     let items = @json($items);
-    // Check 2: Is the items data valid?
     if (!items || typeof items.filter !== 'function') {
         console.error('Items data is not available or not in expected format (array).', items);
-        // You might want to inform the user or handle this case gracefully
-        // For now, we'll allow the script to continue but modal item population will fail.
+        // Potentially alert or disable item selection if items are critical and missing
     }
 
     let selectedItemIndex = 0;
     const addItemModalEl = document.getElementById('addItemModal');
 
-    // Check 3: Is the modal HTML element present in the DOM?
     if (!addItemModalEl) {
-        console.error('Modal HTML element with ID #addItemModal not found in the DOM.');
-        alert('Critical Error: The modal's HTML structure (#addItemModal) is missing from sale_create.blade.php. Please check console.');
-        $('.browse-items-btn').prop('disabled', true).text('Modal HTML Error');
-        return; // Stop further execution if modal element is missing
+        console.error('CRITICAL: Modal HTML element with ID #addItemModal not found in the DOM.');
+        alert('CRITICAL ERROR: The modal's HTML structure (#addItemModal) is missing. Modals cannot function. Please check sale_create.blade.php and the browser console.');
+        $('.browse-items-btn, #static_test_modal_button').prop('disabled', true).text('Modal HTML Error');
+        return; // Stop further execution
     }
+    console.log('Modal HTML element #addItemModal IS found.');
 
-    const itemModal = bootstrap.Modal.getOrCreateInstance(addItemModalEl);
+    let itemModalInstance = null;
+    try {
+        itemModalInstance = bootstrap.Modal.getOrCreateInstance(addItemModalEl);
+        console.log('Bootstrap Modal instance created successfully.');
+    } catch (e) {
+        console.error('CRITICAL: Failed to create Bootstrap Modal instance:', e);
+        alert('CRITICAL ERROR: Could not initialize the Bootstrap modal. Error: ' + e.message + ". Check console.");
+        $('.browse-items-btn, #static_test_modal_button').prop('disabled', true).text('Modal Init Error');
+        return;
+    }
 
     function renderModalItems(searchTerm = '') {
         const modalItemsList = $('#modal_items_list');
-        modalItemsList.empty(); // Clear previous items
+        modalItemsList.empty();
 
         if (!items || typeof items.filter !== 'function') {
             console.warn('Cannot render modal items because items data is invalid.');
@@ -164,8 +173,8 @@ $(document).ready(function() {
         }
 
         const filteredItems = items.filter(item =>
-            item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.item_code.toLowerCase().includes(searchTerm.toLowerCase())
+            (item.item_name && item.item_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (item.item_code && item.item_code.toLowerCase().includes(searchTerm.toLowerCase()))
         );
 
         if (filteredItems.length === 0) {
@@ -210,19 +219,36 @@ $(document).ready(function() {
 
     $(document).on('click', '.browse-items-btn', function() {
         console.log('.browse-items-btn clicked. Attempting to open modal.');
-        if (!itemModal) {
-            console.error('itemModal instance is not available when .browse-items-btn was clicked.');
+        if (!itemModalInstance) {
+            console.error('itemModalInstance is not available when .browse-items-btn was clicked.');
             alert('Error: Modal instance is not ready. Check console.');
             return;
         }
         selectedItemIndex = $(this).closest('tr').data('row-index');
-        renderModalItems(); // Populate modal content
+        renderModalItems();
         try {
-            itemModal.show();
-            console.log('itemModal.show() called successfully.');
+            itemModalInstance.show();
+            console.log('Dynamic browse-items-btn: itemModalInstance.show() called successfully.');
         } catch (e) {
-            console.error('Error calling itemModal.show():', e);
+            console.error('Error calling itemModalInstance.show() for dynamic button:', e);
             alert('An error occurred while trying to show the modal: ' + e.message);
+        }
+    });
+
+    $('#static_test_modal_button').on('click', function() {
+        console.log('#static_test_modal_button clicked. Attempting to open modal.');
+        if (!itemModalInstance) {
+            console.error('itemModalInstance is not available when #static_test_modal_button was clicked.');
+            alert('Error: Modal instance is not ready for static button. Check console.');
+            return;
+        }
+        renderModalItems();
+        try {
+            itemModalInstance.show();
+            console.log('Static test button: itemModalInstance.show() called successfully.');
+        } catch (e) {
+            console.error('Error calling itemModalInstance.show() for static button:', e);
+            alert('An error occurred while trying to show the modal (static button): ' + e.message);
         }
     });
 
@@ -234,9 +260,9 @@ $(document).ready(function() {
         targetRow.find('.item-id').val(selectedItem.id);
         targetRow.find('.item-name').val(selectedItem.item_name + ' (' + selectedItem.item_code + ')');
         targetRow.find('.item-price').val(selectedItem.sales_price);
-        targetRow.find('.item-quantity').val(1); // Default quantity to 1
+        targetRow.find('.item-quantity').val(1);
         calculateRowAmount(targetRow);
-        itemModal.hide();
+        if(itemModalInstance) itemModalInstance.hide();
     });
 
     $(document).on('click', '.remove-item-row', function() {
@@ -273,11 +299,8 @@ $(document).ready(function() {
         $('#grand_total').val(grandTotal.toFixed(2));
     }
 
-    if ($('#items_table tbody tr').length === 0 && items && items.length > 0) {
-        // $('#add_item_row').click(); // Optionally auto-add first row if needed
-    } else if ($('#items_table tbody tr').length === 0) {
-        // If no items in table and no items to select, maybe show a message or just one empty row
-         $('#add_item_row').click(); 
+    if ($('#items_table tbody tr').length === 0) {
+         $('#add_item_row').click();
     }
 });
 </script>

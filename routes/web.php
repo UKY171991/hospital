@@ -48,3 +48,6 @@ Route::get('/sale/create', [SaleController::class, 'create'])->name('sale.create
 Route::post('/sale/store', [SaleController::class, 'store'])->name('sale.store');
 Route::get('/sale/manage', [SaleController::class, 'index'])->name('sale.manage'); // Added for listing sales
 Route::get('/sale/show/{sale}', [SaleController::class, 'show'])->name('sale.show'); // Added for viewing a single sale
+
+// Add route for PurchaseController store method
+Route::post('/purchase/store', [PurchaseController::class, 'store'])->name('purchase.store');
