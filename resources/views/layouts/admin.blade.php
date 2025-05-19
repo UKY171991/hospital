@@ -74,7 +74,7 @@
                     </li>
                     <li><a href="/hospital/manage"><i class="fa fa-money-bill"></i> <span>Hospital</span></a></li>
                     <li><a href="/employee/manage"><i class="fa fa-users"></i> <span>Employee</span></a></li>
-                    <li><a href="#"><i class="fa fa-box"></i> <span>Item</span></a></li>
+                    <li><a href="{{ route('item.manage') }}"><i class="fa fa-box"></i> <span>Item</span></a></li>
                     <li class="submenu">
                         <a href="#"><i class="fa fa-cogs"></i> <span>Setup</span> <span class="menu-arrow"></span></a>
                         <ul class="childBar">
@@ -115,7 +115,8 @@
                         <a href="#"><i class="fa fa-warehouse"></i> <span>Inventory</span> <span class="menu-arrow"></span></a>
                         <ul class="childBar">
                             <li><a href="#"><i class="fa fa-id-card"></i> Suppliers</a></li>
-                            <li><a href="#"><i class="fa fa-shopping-bag"></i> Sale Item</a></li>
+                            <li><a href="{{ route('sale.create') }}"><i class="fa fa-shopping-bag"></i> Add Sale</a></li>
+                            <li><a href="{{ route('sale.manage') }}"><i class="fa fa-list"></i> Sale List</a></li>
                             <li><a href="#"><i class="fa fa-shopping-cart"></i> Purchase Item</a></li>
                             <li><a href="#"><i class="fa fa-balance-scale"></i> Item Stock</a></li>
                         </ul>
@@ -169,6 +170,7 @@
         </div>
         @yield('content')
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.querySelectorAll('.sidebar-menu .submenu > a').forEach(function(menu) {
@@ -180,5 +182,6 @@
         });
     </script>
     @yield('scripts')
+    @stack('scripts') 
 </body>
 </html>

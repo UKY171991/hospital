@@ -1,8 +1,11 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ItemController; // Add this line
+use App\Http\Controllers\SaleController; // Add this line
+
+Route::get('/employee/{id}', [EmployeeController::class, 'show'])->name('employee.show');
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,3 +34,17 @@ Route::get('/employee/create', [EmployeeController::class, 'create'])->name('emp
 Route::post('/employee/store', [EmployeeController::class, 'store'])->name('employee.store');
 Route::get('/employee/edit/{id}', [EmployeeController::class, 'edit'])->name('employee.edit');
 Route::put('/employee/update/{id}', [EmployeeController::class, 'update'])->name('employee.update');
+Route::delete('/employee/destroy/{id}', [EmployeeController::class, 'destroy'])->name('employee.destroy');
+
+// Item Routes
+Route::resource('items', ItemController::class)->parameters([
+    'items' => 'item' // Optional: to use {item} instead of {items} in route parameters if you prefer singular
+]);
+// Custom route for item manage page if you want a specific URL like /item/manage
+Route::get('/item/manage', [ItemController::class, 'index'])->name('item.manage');
+
+// Sale Routes
+Route::get('/sale/create', [SaleController::class, 'create'])->name('sale.create');
+Route::post('/sale/store', [SaleController::class, 'store'])->name('sale.store');
+Route::get('/sale/manage', [SaleController::class, 'index'])->name('sale.manage'); // Added for listing sales
+Route::get('/sale/show/{sale}', [SaleController::class, 'show'])->name('sale.show'); // Added for viewing a single sale
