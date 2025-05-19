@@ -242,6 +242,7 @@
             </div>
             <div class="modal-body">
                 <form id="saleForm">
+                    <input type="hidden" id="user_id" name="user_id" value="{{ auth()->user()->id }}">
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -259,6 +260,14 @@
                             <div class="form-group">
                                 <label for="client_name">Client Name</label>
                                 <input type="text" class="form-control" id="client_name" name="client_name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="mobile_no">Mobile No</label>
+                                <input type="text" class="form-control" id="mobile_no" name="mobile_no" required>
                             </div>
                         </div>
                     </div>
@@ -339,97 +348,165 @@ $.ajaxSetup({
 });
 
 $(document).ready(function() {
-    // --- SALE MODAL LOGIC ---
-    $('#save_sale_btn').on('click', function(event) { // Added event parameter
-        event.preventDefault(); // Prevent default form submission
-
-        let isValid = true;
-        let sale_items_payload = [];
-        $('#sale_items_table tbody tr').each(function(index) {
-            let item_id_val = $(this).find('.item-id').val();
-            let item_name_val = $(this).find('.item-name').val();
-            let price_val = $(this).find('.item-price').val();
-            let quantity_val = $(this).find('.item-quantity').val();
-            let amount_val = $(this).find('.item-amount').val();
-
-            if (!item_id_val || item_name_val === '' || price_val === '' || parseFloat(price_val) <= 0 || quantity_val === '' || parseInt(quantity_val) <= 0) {
-                isValid = false;
-                toastr.error('Please fill out all sale item details correctly.');
-                return false; // Exit .each() loop
-            }
-            sale_items_payload.push({
-                item_id: item_id_val,
-                price_at_sale: parseFloat(price_val),
-                quantity: parseInt(quantity_val),
-                amount: parseFloat(amount_val)
-            });
-        });
-
-        if (!isValid) {
-            return; // Exit if any item validation failed
-        }
-
-        if (sale_items_payload.length === 0) {
-            toastr.error('Please add at least one valid item to the sale.');
-            return;
-        }
-        if (!$('#client_name').val().trim()) {
-            toastr.error('Please enter a client name.');
-            return;
-        }
-        let data = {
-            invoice_no: $('#sale_invoice_no').val(),
-            date: $('#sale_date').val(),
-            client_name: $('#client_name').val().trim(),
-            total_amount: parseFloat($('#sale_total_amount').val()),
-            total_discount: parseFloat($('#sale_total_discount').val()) || 0,
-            grand_total: parseFloat($('#sale_grand_total').val()),
-            remark: $('#sale_remark').val().trim(),
-            sale_items: sale_items_payload
-        };
-        $.ajax({
-            url: '{{ route("sale.store") }}',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                toastr.success(response.message || 'Sale added successfully!');
-                $('#addSaleModal').modal('hide');
-                $('#saleForm')[0].reset();
-                $('#sale_items_table tbody').html('');
-                let initialRow = `<tr data-row-index="0">
-                            <td>
-                                <input type="hidden" name="items[0][item_id]" class="item-id">
-                                <input type="text" readonly class="form-control item-name" placeholder="Select Item">
-                                <button type="button" class="btn btn-sm btn-secondary browse-sale-items-btn mt-1">Browse</button>
-                            </td>
-                            <td><input type="number" class="form-control item-price" name="items[0][price]" required></td>
-                            <td><input type="number" class="form-control item-quantity" name="items[0][quantity]" min="1" value="1" required></td>
-                            <td><input type="number" class="form-control item-amount" name="items[0][amount]" readonly></td>
-                            <td><button type="button" class="btn btn-danger btn-sm remove-sale-item-row">Remove</button></td>
-                        </tr>`;
-                $('#sale_items_table tbody').append(initialRow);
-                // Optionally, recalculate totals
-                if (typeof calculateSaleTotals === 'function') calculateSaleTotals();
-            },
-            error: function(xhr) {
-                let response = xhr.responseJSON;
-                let errorMessage = 'Failed to add sale.';
-                if (response) {
-                    if (response.errors) {
-                        errorMessage = Object.values(response.errors).flat().join('<br>');
-                    } else if (response.message) {
-                        errorMessage = response.message;
-                    }
-                }
-                toastr.error(errorMessage);
-                console.error("Sale submission error:", xhr.responseText);
-            }
-        });
+    // Prevent form submission via Enter key on the saleForm itself
+    $('#saleForm').on('submit', function(event) {
+        event.preventDefault();
+        console.log('Sale form submission via "submit" event prevented.');
+        toastr.info('Please use the "Submit Sale" button to save the form.', "Info", {timeOut: 5000});
+        return false; 
     });
+
+    // --- SALE MODAL LOGIC ---
+    $('#save_sale_btn').on('click', function(event) {
+        event.preventDefault(); // Ensure this is the first line
+        console.log('#save_sale_btn clicked, preventDefault called.');
+
+        try {
+            let isValid = true;
+            let sale_items_payload = [];
+            
+            if ($('#sale_items_table tbody tr').length === 0 || 
+                ($('#sale_items_table tbody tr').length === 1 && !$('#sale_items_table tbody tr').first().find('.item-id').val())) {
+                // Special check if only the initial empty/template row exists without a selected item
+                 toastr.error('Please add at least one valid item to the sale.');
+                 console.log('Validation failed: No actual sale items added.');
+                 return;
+            }
+
+            $('#sale_items_table tbody tr').each(function(index) {
+                let item_id_val = $(this).find('.item-id').val();
+                let item_name_val = $(this).find('.item-name').val(); // Used for check
+                let price_val = $(this).find('.item-price').val();
+                let quantity_val = $(this).find('.item-quantity').val();
+                let amount_val = $(this).find('.item-amount').val();
+
+                // Skip validation for a completely empty template row if it's the only one and wasn't caught above
+                // This might be needed if the table can be truly empty vs. having one template row
+                if (!item_id_val && !item_name_val && !price_val && !quantity_val) {
+                    if ($('#sale_items_table tbody tr').length === 1) {
+                         // This case should ideally be caught by the check above.
+                         // If it reaches here, it implies an empty row that wasn't the *only* row or logic needs refinement.
+                    }
+                    return true; // Continue to next iteration, effectively skipping empty rows
+                }
+
+                if (!item_id_val || item_name_val === '' || price_val === '' || parseFloat(price_val) <= 0 || quantity_val === '' || parseInt(quantity_val) <= 0) {
+                    isValid = false;
+                    toastr.error('Please fill out all sale item details correctly in row ' + (index + 1) + '. Ensure item is selected, price and quantity are positive.', "Item Error", {timeOut: 7000});
+                    console.log('Item validation failed for row ' + (index + 1) + ':', $(this).find(':input').serialize());
+                    return false; // Exit .each() loop
+                }
+                sale_items_payload.push({
+                    item_id: item_id_val,
+                    price_at_sale: parseFloat(price_val),
+                    quantity: parseInt(quantity_val),
+                    amount: parseFloat(amount_val)
+                });
+            });
+
+            if (!isValid) {
+                console.log('Form validation failed at item details. Submission aborted.');
+                return; 
+            }
+
+            if (sale_items_payload.length === 0) {
+                toastr.error('Please add at least one valid item to the sale.');
+                console.log('Validation failed: No sale items in payload after loop.');
+                return;
+            }
+
+            if (!$('#client_name').val().trim()) {
+                toastr.error('Please enter a client name.');
+                console.log('Validation failed: Client name is missing.');
+                return;
+            }
+            if (!$('#sale_date').val()) {
+                toastr.error('Please select a sale date.');
+                console.log('Validation failed: Sale date is missing.');
+                return;
+            }
+
+            let data = {
+                invoice_no: $('#sale_invoice_no').val(),
+                date: $('#sale_date').val(),
+                client_name: $('#client_name').val().trim(),
+                mobile_no: $('#mobile_no').val().trim(),
+                total_amount: parseFloat($('#sale_total_amount').val()) || 0,
+                total_discount: parseFloat($('#sale_total_discount').val()) || 0,
+                grand_total: parseFloat($('#sale_grand_total').val()) || 0,
+                remark: $('#sale_remark').val().trim(),
+                user_id: $('#user_id').val(),
+                sale_items: sale_items_payload
+            };
+            
+            console.log('Submitting sale data to {{ route("sale.store") }}:', JSON.stringify(data, null, 2));
+
+            $.ajax({
+                url: '{{ route("sale.store") }}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                // CSRF token is set globally via $.ajaxSetup
+                success: function(response) {
+                    console.log('Sale submission success:', response);
+                    toastr.success(response.message || 'Sale added successfully!');
+                    $('#addSaleModal').modal('hide');
+                    $('#saleForm')[0].reset(); // Reset form fields
+                    $('#sale_items_table tbody').html(''); // Clear item table
+                    
+                    // Add back the initial row for new entries
+                    let initialRow = `<tr data-row-index="0">
+                                <td>
+                                    <input type="hidden" name="items[0][item_id]" class="item-id">
+                                    <input type="text" readonly class="form-control item-name" placeholder="Select Item">
+                                    <button type="button" class="btn btn-sm btn-secondary browse-sale-items-btn mt-1">Browse</button>
+                                </td>
+                                <td><input type="number" class="form-control item-price" name="items[0][price]" required></td>
+                                <td><input type="number" class="form-control item-quantity" name="items[0][quantity]" min="1" value="1" required></td>
+                                <td><input type="number" class="form-control item-amount" name="items[0][amount]" readonly></td>
+                                <td><button type="button" class="btn btn-danger btn-sm remove-sale-item-row">Remove</button></td>
+                            </tr>`;
+                    $('#sale_items_table tbody').append(initialRow);
+                    
+                    // Reset totals display
+                    $('#sale_total_amount').val('0');
+                    $('#sale_total_discount').val('0'); // Assuming discount also resets
+                    $('#sale_grand_total').val('0');
+
+                    if (typeof calculateSaleTotals === 'function') {
+                        calculateSaleTotals(); // Call this if it exists to update totals based on new empty row
+                    }
+                    // Consider if a table reload/redraw is needed if you use a DataTable or similar
+                },
+                error: function(xhr, status, error) {
+                    console.error("Sale submission AJAX error. Status:", status, "Error:", error, "XHR:", xhr);
+                    let errorMessage = 'Failed to add sale. Please check console for details.';
+                    if (xhr.responseJSON) {
+                        console.error("Server JSON response:", xhr.responseJSON);
+                        if (xhr.responseJSON.errors) {
+                            errorMessage = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+                        } else if (xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                    } else if (xhr.responseText) {
+                        console.error("Raw error response text:", xhr.responseText);
+                        // Avoid showing raw HTML error pages directly in toastr
+                        if (xhr.responseText.toLowerCase().includes("<html")) {
+                            errorMessage = "Server returned an HTML error page. Check console.";
+                        } else {
+                            errorMessage = xhr.responseText.substring(0, 200); // Show a snippet
+                        }
+                    }
+                    toastr.error(errorMessage, "Submission Error", {timeOut: 10000, extendedTimeOut: 5000});
+                }
+            });
+
+        } catch (e) {
+            console.error("Critical error in #save_sale_btn click handler:", e);
+            toastr.error('A client-side script error occurred: ' + e.message + '. Please check the browser console (F12) for more details.', "Client Script Error", {timeOut: 10000});
+        }
+    });
+
     // --- PURCHASE MODAL LOGIC ---
     let allItems = [];
     let currentPurchaseItemRowIndex = 0;
@@ -854,10 +931,12 @@ $(document).ready(function() {
             invoice_no: $('#sale_invoice_no').val(),
             date: $('#sale_date').val(),
             client_name: $('#client_name').val().trim(),
+            mobile_no: $('#mobile_no').val().trim(),
             total_amount: parseFloat($('#sale_total_amount').val()),
             total_discount: parseFloat($('#sale_total_discount').val()) || 0,
             grand_total: parseFloat($('#sale_grand_total').val()),
             remark: $('#sale_remark').val().trim(),
+            user_id: $('#user_id').val(),
             sale_items: sale_items_payload
         };
 
