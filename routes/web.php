@@ -2,8 +2,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\ItemController; // Add this line
-use App\Http\Controllers\SaleController; // Add this line
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\PurchaseController;
 
 Route::get('/employee/{id}', [EmployeeController::class, 'show'])->name('employee.show');
 

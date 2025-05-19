@@ -68,6 +68,10 @@ class SaleController extends Controller
             foreach ($request->sale_items as $itemData) {
                 $item = Item::find($itemData['item_id']);
                 if (!$item || $item->current_stock < $itemData['quantity']) {
+                    DB::rollBack(); // Rollback before throwing exception
+                    if ($request->ajax()) {
+                        return response()->json(['success' => false, 'message' => 'Not enough stock for item: ' . ($item ? $item->item_name : 'Unknown Item')], 422);
+                    }
                     throw new \Exception('Not enough stock for item: ' . ($item ? $item->item_name : 'Unknown Item'));
                 }
 
@@ -85,9 +89,23 @@ class SaleController extends Controller
             }
 
             DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Sale created successfully.']);
+            }
             return redirect()->route('sale.manage')->with('success', 'Sale created successfully.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) { // Specifically catch validation exceptions
+            DB::rollBack();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Validation failed.', 'errors' => $e->errors()], 422);
+            }
+            return redirect()->back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
             DB::rollBack();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to create sale: ' . $e->getMessage()], 500); // Use 500 for general server errors
+            }
             return redirect()->back()->withInput()->withErrors(['error' => 'Failed to create sale: ' . $e->getMessage()]);
         }
     }

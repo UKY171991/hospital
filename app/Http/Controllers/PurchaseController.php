@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Purchase; // Add this line
 
 class PurchaseController extends Controller
 {
     //
     public function store(Request $request)
     {
+        \Log::info('Purchase Store Request:', $request->all());
+
         $validated = $request->validate([
             'invoice_no' => 'required|unique:purchases',
             'date' => 'required|date',
@@ -17,15 +20,15 @@ class PurchaseController extends Controller
             'eway_bill_no' => 'nullable|string',
             'total_amount' => 'required|numeric',
             'remarks' => 'nullable|string',
-            'items' => 'required|array',
-            'items.*.item_id' => 'required|exists:items,id',
-            'items.*.price' => 'required|numeric',
-            'items.*.quantity' => 'required|integer',
-            'items.*.amount' => 'required|numeric',
+            'purchase_items' => 'required|array', // Changed from 'items' to 'purchase_items'
+            'purchase_items.*.item_id' => 'required|exists:items,id', // Changed from 'items.*.item_id'
+            'purchase_items.*.price' => 'required|numeric', // Changed from 'items.*.price'
+            'purchase_items.*.quantity' => 'required|integer', // Changed from 'items.*.quantity'
+            'purchase_items.*.amount' => 'required|numeric', // Changed from 'items.*.amount'
         ]);
 
         $purchase = Purchase::create($validated);
-        foreach ($validated['items'] as $item) {
+        foreach ($validated['purchase_items'] as $item) { // Changed from 'items' to 'purchase_items'
             $purchase->items()->create($item);
         }
 
@@ -42,17 +45,17 @@ class PurchaseController extends Controller
             'eway_bill_no' => 'nullable|string',
             'total_amount' => 'required|numeric',
             'remarks' => 'nullable|string',
-            'items' => 'required|array',
-            'items.*.item_id' => 'required|exists:items,id',
-            'items.*.price' => 'required|numeric',
-            'items.*.quantity' => 'required|integer',
-            'items.*.amount' => 'required|numeric',
+            'purchase_items' => 'required|array', // Changed from 'items' to 'purchase_items'
+            'purchase_items.*.item_id' => 'required|exists:items,id', // Changed from 'items.*.item_id'
+            'purchase_items.*.price' => 'required|numeric', // Changed from 'items.*.price'
+            'purchase_items.*.quantity' => 'required|integer', // Changed from 'items.*.quantity'
+            'purchase_items.*.amount' => 'required|numeric', // Changed from 'items.*.amount'
         ]);
 
         $purchase = Purchase::findOrFail($id);
         $purchase->update($validated);
         $purchase->items()->delete();
-        foreach ($validated['items'] as $item) {
+        foreach ($validated['purchase_items'] as $item) { // Changed from 'items' to 'purchase_items'
             $purchase->items()->create($item);
         }
 
