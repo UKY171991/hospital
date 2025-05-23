@@ -12,6 +12,14 @@
     <!-- jQuery (required for AJAX in user management) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     @stack('styles')
+    <style>
+        body {
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+        .main-content {
+            min-height: calc(100vh - 56px); /* Adjust for header/footer height */
+        }
+    </style>
 </head>
 <body class="g-sidenav-show bg-gray-200">
     <div class="min-vh-100 d-flex">
