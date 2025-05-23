@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-5">
+<div class="container mt-5" style="min-height: calc(100vh - 200px);">
     <div class="card shadow-lg">
         <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
             <h3 class="mb-0">Manage Hospital</h3>
