@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="/" class="brand-link text-center">
+    <a href="{{ url('/') }}" class="brand-link text-center">
         <span class="brand-text font-weight-bold text-white">HEALTHCARE HOSPITAL</span>
     </a>
     <!-- Sidebar -->
@@ -122,7 +122,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/schedule') }}" class="nav-link {{ request()->is('schedule*') ? 'active' : '' }}">
+                            <a href="{{ route('schedule.index') }}" class="nav-link {{ request()->routeIs('schedule.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-calendar-check"></i>
                                 <p>Doctor Schedule</p>
                             </a>
@@ -132,14 +132,14 @@
                 <!-- Attendance Menu -->
 
                 <li class="nav-item">
-                    <a href="{{ url('/attendance') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+                    <a href="{{ route('attendance.index') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-box"></i>
                         <p>Attendance</p>
                     </a>
                 </li>
                 <!-- Patient Menu -->
                 @php
-                    $patientActive = request()->is('patient*') || request()->is('opd*') || request()->is('ipd*') || request()->is('item_mapping*');
+                    $patientActive = request()->routeIs('patient.*') || request()->routeIs('opd.*') || request()->routeIs('ipd.*') || request()->routeIs('item_mapping.*');
                 @endphp
                 <li class="nav-item has-treeview {{ $patientActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $patientActive ? 'active' : '' }}">
@@ -151,25 +151,25 @@
                     </a>
                     <ul class="nav nav-treeview" style="{{ $patientActive ? 'display: block;' : '' }}">
                         <li class="nav-item">
-                            <a href="{{ url('/patient') }}" class="nav-link {{ request()->is('patient*') ? 'active' : '' }}">
+                            <a href="{{ route('patient.index') }}" class="nav-link {{ request()->routeIs('patient.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-rupee-sign"></i>
                                 <p>Patient Registration</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/opd') }}" class="nav-link {{ request()->is('opd*') ? 'active' : '' }}">
+                            <a href="{{ route('opd.index') }}" class="nav-link {{ request()->routeIs('opd.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-rupee-sign"></i>
                                 <p>Out Patient Dept</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/ipd') }}" class="nav-link {{ request()->is('ipd*') ? 'active' : '' }}">
+                            <a href="{{ route('ipd.index') }}" class="nav-link {{ request()->routeIs('ipd.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-rupee-sign"></i>
                                 <p>In Patient Dept</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/item_mapping') }}" class="nav-link {{ request()->is('item_mapping*') ? 'active' : '' }}">
+                            <a href="{{ route('item_mapping.index') }}" class="nav-link {{ request()->routeIs('item_mapping.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-rupee-sign"></i>
                                 <p>Item Dept</p>
                             </a>
@@ -229,8 +229,8 @@
                     </a>
                     <ul class="nav nav-treeview" style="{{ $frontOfficeActive ? 'display: block;' : '' }}">
                         <li class="nav-item">
-                            <a href="{{ url('/complaint-type') }}" class="nav-link {{ request()->is('complaint-type*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-ruble-sign"></i>
+                            <a href="{{ route('complaint_type.index') }}" class="nav-link {{ request()->routeIs('complaint_type.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-money-bill-alt"></i>
                                 <p>Complaint Type</p>
                             </a>
                         </li>
@@ -278,4 +278,4 @@
         <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
-</aside> 
+</aside>

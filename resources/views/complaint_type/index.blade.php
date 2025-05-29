@@ -57,7 +57,7 @@ $(function() {
         processing: true,
         serverSide: false,
         ajax: {
-            url: '{{ url('complaint-type') }}',
+            url: '{{ route('complaint_type.index') }}',
             dataSrc: 'data'
         },
         columns: [
@@ -125,4 +125,4 @@ $(function() {
     });
 });
 </script>
-@endpush 
+@endpush

@@ -34,13 +34,13 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}">Forgot Your Password?</a>
+                            <a href="/forgot-password">Forgot Your Password?</a>
                         @endif
                         <button type="submit" class="btn btn-primary">Log In</button>
                     </div>
                 </form>
                 <p class="mb-0 text-center">
-                    <a href="{{ route('register') }}" class="text-center">Register a new account</a>
+                    <a href="/register" class="text-center">Register a new account</a>
                 </p>
             </div>
         </div>

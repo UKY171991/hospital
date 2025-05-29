@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://miniature-invention-rrwvjvq9v9xhjxv-8000.app.github.dev/'),
 
     /*
     |--------------------------------------------------------------------------
