@@ -235,19 +235,19 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/reference') }}" class="nav-link {{ request()->is('reference*') ? 'active' : '' }}">
+                            <a href="{{ route('reference.index') }}" class="nav-link {{ request()->routeIs('reference.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-ruble-sign"></i>
                                 <p>Reference</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/enquiry') }}" class="nav-link {{ request()->is('enquiry*') ? 'active' : '' }}">
+                            <a href="{{ route('enquiry.index') }}" class="nav-link {{ request()->routeIs('enquiry.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-ruble-sign"></i>
                                 <p>Enquiry</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/complaint') }}" class="nav-link {{ request()->is('complaint*') ? 'active' : '' }}">
+                            <a href="{{ route('complaint.index') }}" class="nav-link {{ request()->routeIs('complaint.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-ruble-sign"></i>
                                 <p>Complaint</p>
                             </a>
