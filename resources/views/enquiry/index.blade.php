@@ -57,7 +57,7 @@ $(function() {
         processing: true,
         serverSide: false,
         ajax: {
-            url: '{{ url('enquiry') }}',
+            url: '{{ route('enquiry.index') }}',
             dataSrc: 'data'
         },
         columns: [
@@ -65,10 +65,11 @@ $(function() {
             { data: 'name' },
             { data: 'description' },
             { data: 'status', render: function(data, type, row) {
-                return `<button class=\"btn btn-link toggle-status\" data-id=\"${row.id}\">${data ? '<i class=\\'fa fa-eye text-success\\'></i>' : '<i class=\\'fa fa-eye-slash text-danger\\'></i>'}</button>`;
+                return `<button class="btn btn-link toggle-status" data-id="${row.id}">${data ? '<i class="fa fa-eye text-success"></i>' : '<i class="fa fa-eye-slash text-danger"></i>'}</button>`;
             }},
             { data: null, render: function(data, type, row) {
-                return `<button class=\"btn btn-info btn-sm editBtn\" data-id=\"${row.id}\" data-name=\"${row.name}\" data-description=\"${row.description}\"><i class=\"fa fa-edit\"></i></button>`;
+                return `<button class="btn btn-info btn-sm editBtn" data-id="${row.id}" data-name="${row.name}" data-description="${row.description}"><i class="fa fa-edit"></i></button> ` +
+                       `<button class="btn btn-danger btn-sm deleteBtn" data-id="${row.id}"><i class="fa fa-trash"></i></button>`;
             }}
         ],
         dom: 'Bfrtip',
@@ -89,15 +90,18 @@ $(function() {
         let id = $('#enquiry_id').val();
         let url = id ? `{{ url('enquiry/update') }}/${id}` : `{{ url('enquiry/store') }}`;
         let method = 'POST';
+        let formData = $(this).serializeArray();
+        formData.push({ name: '_token', value: $('meta[name="csrf-token"]').attr('content') });
         $.ajax({
             url: url,
             method: method,
-            data: $(this).serialize(),
+            data: $.param(formData),
             success: function(res) {
                 toastr.success('Saved successfully');
                 table.ajax.reload();
                 $('#enquiryForm')[0].reset();
                 $('#enquiry_id').val('');
+                $('#name').focus();
             },
             error: function(xhr) {
                 toastr.error('Error occurred');
@@ -122,6 +126,25 @@ $(function() {
             toastr.success('Status updated');
             table.ajax.reload();
         });
+    });
+
+    // Delete
+    $('#enquiryTable').on('click', '.deleteBtn', function() {
+        let id = $(this).data('id');
+        if(confirm('Are you sure you want to delete this enquiry?')) {
+            $.ajax({
+                url: `{{ url('enquiry/delete') }}/${id}`,
+                method: 'DELETE',
+                data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                success: function(res) {
+                    toastr.success('Deleted successfully');
+                    table.ajax.reload();
+                },
+                error: function(xhr) {
+                    toastr.error('Delete failed');
+                }
+            });
+        }
     });
 });
 </script>

@@ -89,10 +89,12 @@ $(function() {
         let id = $('#complaint_type_id').val();
         let url = id ? `{{ url('complaint-type/update') }}/${id}` : `{{ url('complaint-type/store') }}`;
         let method = 'POST';
+        let formData = $(this).serializeArray();
+        formData.push({ name: '_token', value: $('meta[name="csrf-token"]').attr('content') });
         $.ajax({
             url: url,
             method: method,
-            data: $(this).serialize(),
+            data: $.param(formData),
             success: function(res) {
                 toastr.success('Saved successfully');
                 table.ajax.reload();

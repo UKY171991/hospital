@@ -65,10 +65,10 @@ $(function() {
             { data: 'name' },
             { data: 'description' },
             { data: 'status', render: function(data, type, row) {
-                return `<button class=\"btn btn-link toggle-status\" data-id=\"${row.id}\">${data ? '<i class=\\'fa fa-eye text-success\\'></i>' : '<i class=\\'fa fa-eye-slash text-danger\\'></i>'}</button>`;
+                return `<button class="btn btn-link toggle-status" data-id="${row.id}">${data ? '<i class="fa fa-eye text-success"></i>' : '<i class="fa fa-eye-slash text-danger"></i>'}</button>`;
             }},
             { data: null, render: function(data, type, row) {
-                return `<button class=\"btn btn-info btn-sm editBtn\" data-id=\"${row.id}\" data-name=\"${row.name}\" data-description=\"${row.description}\"><i class=\"fa fa-edit\"></i></button>`;
+                return `<button class="btn btn-info btn-sm editBtn" data-id="${row.id}" data-name="${row.name}" data-description="${row.description}"><i class="fa fa-edit"></i></button>`;
             }}
         ],
         dom: 'Bfrtip',
@@ -89,10 +89,12 @@ $(function() {
         let id = $('#complaint_id').val();
         let url = id ? `{{ url('complaint/update') }}/${id}` : `{{ url('complaint/store') }}`;
         let method = 'POST';
+        let formData = $(this).serializeArray();
+        formData.push({ name: '_token', value: $('meta[name="csrf-token"]').attr('content') });
         $.ajax({
             url: url,
             method: method,
-            data: $(this).serialize(),
+            data: $.param(formData),
             success: function(res) {
                 toastr.success('Saved successfully');
                 table.ajax.reload();

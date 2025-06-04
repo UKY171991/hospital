@@ -58,7 +58,10 @@ $(function() {
         serverSide: false,
         ajax: {
             url: '{{ url('reference') }}',
-            dataSrc: 'data'
+            dataSrc: 'data',
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
+            }
         },
         columns: [
             { data: null, render: (data, type, row, meta) => meta.row + 1 },
@@ -89,10 +92,12 @@ $(function() {
         let id = $('#reference_id').val();
         let url = id ? `{{ url('reference/update') }}/${id}` : `{{ url('reference/store') }}`;
         let method = 'POST';
+        let formData = $(this).serializeArray();
+        formData.push({ name: '_token', value: $('meta[name="csrf-token"]').attr('content') });
         $.ajax({
             url: url,
             method: method,
-            data: $(this).serialize(),
+            data: $.param(formData),
             success: function(res) {
                 toastr.success('Saved successfully');
                 table.ajax.reload();

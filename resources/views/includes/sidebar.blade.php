@@ -242,7 +242,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('enquiry.index') }}" class="nav-link {{ request()->routeIs('enquiry.*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-ruble-sign"></i>
+                                <i class="nav-icon fas fa-question-circle"></i>
                                 <p>Enquiry</p>
                             </a>
                         </li>
@@ -268,6 +268,72 @@
                             <a href="{{ url('/call-log') }}" class="nav-link {{ request()->is('call-log*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-ruble-sign"></i>
                                 <p>Call Log</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Income/Expenses Menu -->
+                @php
+                    $incomeExpenseActive = request()->is('income-expense-category*') || request()->is('income-expense-item*') || request()->is('income-expense*');
+                @endphp
+                <li class="nav-item has-treeview {{ $incomeExpenseActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $incomeExpenseActive ? 'active' : '' }}" style="background: #e53935; color: #fff;">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <p>
+                            Income/Expenses
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview" style="{{ $incomeExpenseActive ? 'display: block;' : '' }}">
+                        <li class="nav-item">
+                            <a href="{{ route('income_category.index') }}" class="nav-link {{ request()->is('income_category*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-money-bill"></i>
+                                <p>Income/Expenses</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('income_item.index') }}" class="nav-link {{ request()->is('income_item*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-money-bill"></i>
+                                <p>Income/Expenses Items</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/income_expense') }}" class="nav-link {{ request()->is('income_expense') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-ruble-sign"></i>
+                                <p>Income/Expenses</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Accounts Menu -->
+                @php
+                    $accountsActive = request()->is('payment*') || request()->is('receipt*') || request()->is('quick-receipt*');
+                @endphp
+                <li class="nav-item has-treeview {{ $accountsActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $accountsActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <p>
+                            Accounts
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview" style="{{ $accountsActive ? 'display: block;' : '' }}">
+                        <li class="nav-item">
+                            <a href="{{ url('/payment') }}" class="nav-link {{ request()->is('payment*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-ruble-sign"></i>
+                                <p>Payment</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/receipt') }}" class="nav-link {{ request()->is('receipt*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-ruble-sign"></i>
+                                <p>Receipt</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/quick-receipt') }}" class="nav-link {{ request()->is('quick-receipt*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-ruble-sign"></i>
+                                <p>Quick Receipt</p>
                             </a>
                         </li>
                     </ul>

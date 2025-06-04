@@ -20,6 +20,10 @@ use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\PostalDispatchController;
 use App\Http\Controllers\PostalReceiveController;
 use App\Http\Controllers\CallLogController;
+use App\Http\Controllers\IncomeCategoryController;
+use App\Http\Controllers\IncomeExpenseController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReceiptController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -120,6 +124,16 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete/{id}', [CallLogController::class, 'destroy'])->name('call_log.destroy');
         Route::post('/toggle-status/{id}', [CallLogController::class, 'toggleStatus'])->name('call_log.toggle_status');
     });
+    Route::resource('income_category', IncomeCategoryController::class);
+    Route::resource('income_item', App\Http\Controllers\IncomeItemController::class);
+    // IncomeExpense routes
+    Route::get('income_expense', [App\Http\Controllers\IncomeExpenseController::class, 'index']);
+    Route::get('income_expense/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'show']);
+    Route::post('income_expense/store', [App\Http\Controllers\IncomeExpenseController::class, 'store']);
+    Route::post('income_expense/update/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'update']);
+    Route::delete('income_expense/delete/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'destroy']);
+    Route::resource('payment', PaymentController::class);
+    Route::resource('receipt', ReceiptController::class);
 });
 
 require __DIR__.'/auth.php';

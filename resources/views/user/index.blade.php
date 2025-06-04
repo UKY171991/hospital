@@ -7,6 +7,9 @@
             <div class="col-sm-6">
                 <h1 class="m-0">User List</h1>
             </div>
+            <div class="col-sm-6 text-right">
+                <a href="#" class="btn btn-primary" id="addUserBtn"><i class="fas fa-plus"></i> Add User</a>
+            </div>
         </div>
     </div>
 </div>
@@ -16,18 +19,23 @@
 <div class="container-fluid">
     <div class="card card-primary card-outline">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <form id="filterForm" class="form-inline mb-0">
-                    <div class="form-group mr-2">
-                        <label for="userType" class="mr-2">User Type</label>
-                        <select name="user_type" id="userType" class="form-control">
-                            <option value="">All</option>
-                            {{-- Dynamically fill user types via JS or Blade if available --}}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success btn-xs"><i class="fas fa-search"></i> Search</button>
-                </form>
-                <button class="btn btn-primary btn-xs ml-auto" id="addUserBtn"><i class="fas fa-plus"></i> Add User</button>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input type="text" id="searchName" class="form-control" placeholder="Search by Name">
+                </div>
+                <div class="col-md-3">
+                    <select id="searchType" class="form-control">
+                        <option value="">All Types</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Doctor">Doctor</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Receptionist">Receptionist</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-info" id="searchBtn"><i class="fas fa-search"></i> Search</button>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover table-striped" id="userTable" style="width:100%">
@@ -35,7 +43,6 @@
                         <tr>
                             <th>S No</th>
                             <th>User Name</th>
-                            <th>Password</th>
                             <th>Passcode</th>
                             <th>User Type</th>
                             <th>Name</th>
@@ -59,7 +66,6 @@
 @endpush
 
 @push('scripts')
-<!-- Only DataTables and custom scripts, no jQuery or Bootstrap here -->
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
@@ -76,13 +82,13 @@ $(function() {
         ajax: {
             url: '/users',
             data: function(d) {
-                d.user_type = $('#userType').val();
+                d.name = $('#searchName').val();
+                d.user_type = $('#searchType').val();
             }
         },
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { data: 'username', name: 'username' },
-            { data: 'password', name: 'password', render: function(){ return '••••••'; } },
             { data: 'passcode', name: 'passcode' },
             { data: 'user_type', name: 'user_type' },
             { data: 'name', name: 'name' },
@@ -97,8 +103,7 @@ $(function() {
         ]
     });
 
-    $('#filterForm').submit(function(e){
-        e.preventDefault();
+    $('#searchBtn').click(function(){
         table.ajax.reload();
     });
 
@@ -130,7 +135,7 @@ $(function() {
         e.preventDefault();
         let id = $('#userId').val();
         let url = id ? '/users/' + id : '/users';
-        let type = 'POST'; // Always POST, use _method for PUT
+        let type = 'POST';
         let data = $(this).serialize();
         if (id) {
             data += '&_method=PUT';
@@ -139,9 +144,6 @@ $(function() {
             url: url,
             type: type,
             data: data,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
             success: function(){
                 $('#userModal').modal('hide');
                 table.ajax.reload();
@@ -180,41 +182,6 @@ $(function() {
         $.post('/users/status/' + id, {_token: '{{ csrf_token() }}'}, function(){
             table.ajax.reload();
         });
-    });
-});
-
-$(document).ready(function() {
-    // Test Modal
-    $('#testModalBtn').off('click').on('click', function() {
-        $('#testModal').modal('show');
-    });
-    // Add User Modal
-    $('#addUserBtn').off('click').on('click', function(){
-        $('#userForm')[0].reset();
-        $('#userId').val('');
-        $('#userModalLabel').text('Add User');
-        $('#userModal').modal('show');
-    });
-    // Edit User Modal
-    $(document).off('click', '.editBtn').on('click', '.editBtn', function(){
-        let id = $(this).data('id');
-        $.get('/users/' + id, function(user){
-            $('#userId').val(user.id);
-            $('#username').val(user.username);
-            $('#password').val('');
-            $('#passcode').val(user.passcode);
-            $('#user_type').val(user.user_type);
-            $('#name').val(user.name);
-            $('#mobile_no').val(user.mobile_no);
-            $('#email').val(user.email);
-            $('#status').val(user.status);
-            $('#userModalLabel').text('Edit User');
-            $('#userModal').modal('show');
-        });
-    });
-    // Close modal on success (already handled in AJAX, but ensure here too)
-    $('#userModal').on('hidden.bs.modal', function () {
-        $('#userForm')[0].reset();
     });
 });
 </script>
