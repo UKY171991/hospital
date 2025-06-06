@@ -36,7 +36,7 @@ class PatientController extends Controller
                 ->rawColumns(['photo', 'status', 'action'])
                 ->make(true);
         }
-        return view('patient.index');
+        return view('reports.patient');
     }
 
     public function store(Request $request)

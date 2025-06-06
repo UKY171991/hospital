@@ -2,51 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Sidebar Styles */
-.sidebar-glass {
-    background: rgba(44, 48, 54, 0.97);
-    box-shadow: 2px 0 16px 0 rgba(31, 38, 135, 0.10);
-    border-radius: 0;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-}
-.sidebar-link {
-    color: #e9ecef !important;
-    border-radius: 0.7rem;
-    margin-bottom: 6px;
-    padding: 0.7rem 1.1rem;
-    font-size: 1.05rem;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    position: relative;
-}
-.sidebar-link.active, .sidebar-link:hover {
-    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%) !important;
-    color: #fff !important;
-    box-shadow: 0 2px 8px rgba(37,99,235,0.10);
-}
-.sidebar-link.active::before, .sidebar-link:hover::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 10%;
-    height: 80%;
-    width: 4px;
-    background: #38bdf8;
-    border-radius: 2px;
-}
-.sidebar-sublink {
-    color: #b0b8c1 !important;
-    font-size: 0.98rem;
-    margin-left: 0.5rem;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem 0.5rem 2rem;
-    transition: background 0.2s, color 0.2s;
-}
-.sidebar-sublink:hover, .sidebar-sublink.active {
-    background: #2563eb !important;
-    color: #fff !important;
-}
-
 /* Dashboard Card Styles */
 .bg-gradient-primary {
     background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%) !important;

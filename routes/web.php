@@ -24,6 +24,7 @@ use App\Http\Controllers\IncomeCategoryController;
 use App\Http\Controllers\IncomeExpenseController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\LedgerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -58,7 +59,7 @@ Route::middleware('auth')->group(function () {
     Route::get('attendance/employees', [App\Http\Controllers\AttendanceController::class, 'employees']);
     Route::get('attendance/doctors', [App\Http\Controllers\AttendanceController::class, 'doctors']);
     Route::resource('attendance', App\Http\Controllers\AttendanceController::class);
-    Route::resource('patient', App\Http\Controllers\PatientController::class);
+    Route::resource('patients', App\Http\Controllers\PatientController::class);
     Route::resource('opd', App\Http\Controllers\OpdController::class);
     Route::resource('ipd', App\Http\Controllers\IpdController::class);
     Route::resource('item_mapping', App\Http\Controllers\ItemMappingController::class);
@@ -134,6 +135,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('income_expense/delete/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'destroy']);
     Route::resource('payment', PaymentController::class);
     Route::resource('receipt', ReceiptController::class);
+    Route::get('/quick-receipt', [App\Http\Controllers\ReceiptController::class, 'index'])->name('quick-receipt');
+    Route::get('/reports/ledger', function() {
+        return view('reports.ledger');
+    })->name('reports.ledger');
+    Route::get('/reports/patient', function() {
+        return view('reports.patient');
+    })->name('reports.patient');
+    Route::resource('ledgers', LedgerController::class);
+    Route::get('/patients/register', function() {
+        return view('patients.register');
+    })->name('patients.register');
 });
 
 require __DIR__.'/auth.php';

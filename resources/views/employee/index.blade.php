@@ -10,14 +10,15 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="card card-primary card-outline">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">Manage Employee</h3>
+            <button class="btn btn-primary btn-sm" id="addEmployeeBtn"><i class="fas fa-plus"></i> Create Employee</button>
+        </div>
         <div class="card-body">
-            <div class="d-flex justify-content-end mb-2">
-                <button class="btn btn-primary btn-xs" id="addEmployeeBtn"><i class="fas fa-plus"></i> Create Employee</button>
-            </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped" id="employeeTable" style="width:100%">
-                    <thead class="bg-danger text-white">
+                <table class="table table-bordered table-hover" id="employeeTable" style="width:100%">
+                    <thead class="bg-primary text-white">
                         <tr>
                             <th>S.No.</th>
                             <th>Photo</th>
