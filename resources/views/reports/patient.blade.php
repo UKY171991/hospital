@@ -115,12 +115,33 @@ $(function() {
                 @csrf
                 <input type="hidden" name="id" id="patient_id">
                 <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" name="name" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select class="form-control" name="gender" id="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Blood Group</label>
+                    <input type="text" class="form-control" name="blood_group" id="blood_group" required>
+                </div>
+                <div class="form-group">
+                    <label>Color Vision</label>
+                    <input type="text" class="form-control" name="color_vision" id="color_vision" required>
+                </div>
+                <div class="form-group">
                     <label>Patient Name</label>
-                    <input type="text" class="form-control" name="patient_name" id="patient_name" required>
+                    <input type="text" class="form-control" name="patient_name" id="patient_name">
                 </div>
                 <div class="form-group">
                     <label>Patient Id</label>
-                    <input type="text" class="form-control" name="patient_id_field" id="patient_id_field" required>
+                    <input type="text" class="form-control" name="patient_id_field" id="patient_id_field">
                 </div>
                 <div class="form-group">
                     <label>Relation Name</label>
@@ -153,6 +174,27 @@ $(function() {
                 <form id="patientForm">
                     @csrf
                     <input type="hidden" name="id" id="patient_id" value="${data.id}">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" name="name" id="name" value="${data.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select class="form-control" name="gender" id="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male" ${data.gender === 'Male' ? 'selected' : ''}>Male</option>
+                            <option value="Female" ${data.gender === 'Female' ? 'selected' : ''}>Female</option>
+                            <option value="Other" ${data.gender === 'Other' ? 'selected' : ''}>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Blood Group</label>
+                        <input type="text" class="form-control" name="blood_group" id="blood_group" value="${data.blood_group}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Color Vision</label>
+                        <input type="text" class="form-control" name="color_vision" id="color_vision" value="${data.color_vision}" required>
+                    </div>
                     <div class="form-group">
                         <label>Patient Name</label>
                         <input type="text" class="form-control" name="patient_name" id="patient_name" value="${data.patient_name}" required>

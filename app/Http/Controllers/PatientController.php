@@ -18,23 +18,20 @@ class PatientController extends Controller
             if ($request->to_date) {
                 $query->where('reg_date', '<=', $request->to_date);
             }
-            return datatables()->of($query)
-                ->addIndexColumn()
-                ->editColumn('photo', function($row) {
-                    if ($row->photo) {
-                        $url = asset('storage/patient_photos/' . $row->photo);
-                        return '<img src="' . $url . '" width="50" height="50" style="object-fit:cover;">';
-                    }
-                    return '';
-                })
-                ->editColumn('status', function($row) {
-                    return $row->status === 'Active' ? '<i class="fas fa-eye text-success"></i>' : '<i class="fas fa-eye-slash text-danger"></i>';
-                })
-                ->addColumn('action', function($row) {
-                    return '<a href="#" class="editBtn text-primary" data-id="'.$row->id.'"><i class="fas fa-edit"></i></a>';
-                })
-                ->rawColumns(['photo', 'status', 'action'])
-                ->make(true);
+            $patients = $query->get();
+            $data = $patients->map(function($item, $key) {
+                return [
+                    'sno' => $key + 1,
+                    'patient_name' => $item->patient_name ?? $item->name ?? '',
+                    'patient_id' => $item->patient_id ?? '',
+                    'relation_name' => $item->relation_name ?? '',
+                    'mobile' => $item->mobile ?? '',
+                    'reg_date' => $item->reg_date ?? '',
+                    'address' => $item->address ?? '',
+                    'action' => '<a href="#" class="editBtn text-primary" data-id="'.$item->id.'"><i class="fas fa-edit"></i></a>'
+                ];
+            });
+            return response()->json(['data' => $data]);
         }
         return view('reports.patient');
     }

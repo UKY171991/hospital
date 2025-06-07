@@ -344,9 +344,10 @@
                     </ul>
                 </li>
 
+                <!-- Reports Menu (AdminLTE 3 style) -->
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <i class="nav-icon fas fa-file-alt"></i>
                         <p>
                             Reports
                             <i class="fas fa-angle-left right"></i>
@@ -355,25 +356,19 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ url('/reports/ledger') }}" class="nav-link">
-                                <i class="fas fa-ruble-sign nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Ledger</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/reports/patient') }}" class="nav-link">
-                                <i class="fas fa-money-bill-alt nav-icon"></i>
-                                <p>Patient</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="{{ url('/reports/day-book') }}" class="nav-link">
-                                <i class="fas fa-money-bill-alt nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Day Book</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ url('/reports/balance-sheet') }}" class="nav-link">
-                                <i class="fas fa-money-bill-alt nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Balance Sheet</p>
                             </a>
                         </li>
