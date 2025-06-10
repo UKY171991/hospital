@@ -367,7 +367,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/reports/balance-sheet') }}" class="nav-link">
+                            <a href="{{ url('/reports/balance-sheet') }}" class="nav-link {{ request()->is('reports/balance-sheet*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Balance Sheet</p>
                             </a>

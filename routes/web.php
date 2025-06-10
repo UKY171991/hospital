@@ -25,6 +25,7 @@ use App\Http\Controllers\IncomeExpenseController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\LedgerController;
+use App\Http\Controllers\BalanceSheetController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -142,7 +143,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/patient', function() {
         return view('reports.patient');
     })->name('reports.patient');
+    Route::get('/reports/balance-sheet', [App\Http\Controllers\BalanceSheetController::class, 'index']);
     Route::resource('ledgers', LedgerController::class);
+    Route::resource('balance-sheet', BalanceSheetController::class);
     Route::get('/patients/register', function() {
         return view('patients.register');
     })->name('patients.register');
