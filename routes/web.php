@@ -65,6 +65,9 @@ Route::middleware('auth')->group(function () {
     Route::post('item/toggle-status/{id}', [App\Http\Controllers\ItemController::class, 'toggleStatus']);
     Route::resource('department', App\Http\Controllers\DepartmentController::class);
     Route::get('department-test', [App\Http\Controllers\DepartmentController::class, 'testDataTable']);
+    Route::get('department-debug', [App\Http\Controllers\DepartmentController::class, 'debug']);
+    Route::get('department-test-page', function() { return view('department.test'); });
+    Route::get('department-new', function() { return view('department.index_new'); });
     Route::post('department/toggle-status/{id}', [App\Http\Controllers\DepartmentController::class, 'toggleStatus']);
     Route::resource('fee_assign', FeeAssignController::class);
     Route::resource('investigation', InvestigationController::class);

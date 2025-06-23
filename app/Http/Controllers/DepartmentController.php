@@ -12,36 +12,19 @@ class DepartmentController extends Controller
     {
         if ($request->ajax()) {
             $data = Department::query();
-            
-            // Add debugging
-            \Log::info('Department DataTable Request:', [
-                'ajax' => $request->ajax(),
-                'headers' => $request->headers->all(),
-                'query' => $request->query->all(),
-                'count' => $data->count()
-            ]);
-            
-            $result = DataTables::of($data)
+            return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function($row){
-                    $statusClass = $row->status === 'Active' ? 'success' : 'danger';
-                    $newStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
-                    return '<button class="btn btn-'.$statusClass.' btn-xs toggleStatus" data-id="'.$row->id.'" data-status="'.$newStatus.'">'.$row->status.'</button>';
+                    $icon = $row->status === 'Active' ? 'fa-eye text-success' : 'fa-eye-slash text-warning';
+                    $nextStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
+                    return '<a href="#" class="toggleStatus" data-id="'.$row->id.'" data-status="'.$nextStatus.'"><i class="fas '.$icon.'"></i></a>';
                 })
                 ->addColumn('action', function($row){
-                    return '<div class="btn-group" role="group">'
-                        .'<button type="button" class="btn btn-sm btn-info editBtn" data-id="'.$row->id.'" title="Edit">'
-                        .'<i class="fas fa-edit"></i></button>'
-                        .'<button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="'.$row->id.'" title="Delete">'
-                        .'<i class="fas fa-trash"></i></button>'
-                        .'</div>';
+                    return '<button class="btn btn-primary btn-xs editBtn" data-id="'.$row->id.'"><i class="fas fa-edit"></i></button> '
+                        .'<button class="btn btn-danger btn-xs deleteBtn" data-id="'.$row->id.'"><i class="fas fa-trash"></i></button>';
                 })
                 ->rawColumns(['status','action'])
                 ->make(true);
-            
-            \Log::info('DataTable Response:', ['response' => $result->getData()]);
-            
-            return $result;
         }
         return view('department.index');
     }
@@ -66,11 +49,13 @@ class DepartmentController extends Controller
     public function update(Request $request, $id)
     {
         $department = Department::findOrFail($id);
+        
         // If only status is being updated (toggle)
-        if ($request->has('status') && count($request->all()) === 2) { // status + _token
+        if ($request->has('status') && count($request->all()) <= 3) { // status + _token + _method
             $department->update(['status' => $request->status]);
             return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
         }
+        
         $data = $request->validate([
             'department' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
@@ -96,6 +81,23 @@ class DepartmentController extends Controller
 
     // Test endpoint to debug DataTable
     public function testDataTable()
+    {
+        $departments = Department::all();
+        
+        // Debug information
+        $debug = [
+            'count' => $departments->count(),
+            'departments' => $departments->toArray(),
+            'request_headers' => request()->headers->all(),
+            'is_ajax' => request()->ajax(),
+            'method' => request()->method(),
+        ];
+        
+        return response()->json($debug);
+    }
+    
+    // Debug endpoint for manual testing
+    public function debug()
     {
         $departments = Department::all();
         return response()->json([

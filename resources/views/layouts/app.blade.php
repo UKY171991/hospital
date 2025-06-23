@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">    <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-sc            /* Custom animations */
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <style>
+            /* Custom animations */
             @keyframes fadeInUp {
                 from {
                     opacity: 0;
@@ -234,13 +236,13 @@
                 .dashboard-card .card-body {
                     padding: 15px;
                 }
-                
-                .dashboard-card h3 {
+                  .dashboard-card h3 {
                     font-size: 1.5rem;
                 }
             }
-        </style>    <meta name="csrf-token" content="{{ csrf_token() }}">
-
+        </style>
+        
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Bootstrap 4.5.2 CSS (required for AdminLTE 3) -->
