@@ -13,28 +13,37 @@ class PatientController extends Controller
     {
         if ($request->ajax()) {
             $query = Patient::query();
+            
+            // Apply date filters if provided
             if ($request->from_date) {
                 $query->where('reg_date', '>=', $request->from_date);
             }
             if ($request->to_date) {
                 $query->where('reg_date', '<=', $request->to_date);
             }
-            $patients = $query->get();
-            return DataTables::of($patients)
+            
+            return DataTables::of($query)
                 ->addIndexColumn()
-                ->addColumn('photo', function($item) {
-                    return $item->photo ? '<img src="/storage/patient_photos/' . $item->photo . '" class="img-thumbnail" style="max-width:60px;">' : '';
+                ->addColumn('photo', function($patient) {
+                    return $patient->photo ? $patient->photo : null;
                 })
-                ->addColumn('status', function($item) {
-                    return '<span class="badge badge-success">Active</span>';
+                ->addColumn('status', function($patient) {
+                    return $patient->status ?? 'Active';
                 })
-                ->addColumn('action', function($item) {
-                    return '<a href="#" class="editBtn text-primary" data-id="'.$item->id.'"><i class="fas fa-edit"></i></a>';
+                ->addColumn('is_active', function($patient) {
+                    return $patient->status === 'Active' || !isset($patient->status) ? 1 : 0;
+                })
+                ->addColumn('action', function($patient) {
+                    return ''; // Actions will be rendered by frontend
+                })
+                ->editColumn('reg_date', function($patient) {
+                    return $patient->reg_date ? date('Y-m-d', strtotime($patient->reg_date)) : '';
                 })
                 ->rawColumns(['photo', 'status', 'action'])
                 ->make(true);
         }
-        return view('reports.patient');
+        
+        return view('patient.index');
     }
 
     public function store(Request $request)
@@ -117,4 +126,16 @@ class PatientController extends Controller
         $patient->delete();
         return response()->json(['success' => true, 'message' => 'Patient deleted successfully.']);
     }
-} 
+    
+    public function toggleStatus(Request $request, $id)
+    {
+        $patient = Patient::findOrFail($id);
+        $patient->status = $request->status;
+        $patient->save();
+        
+        return response()->json([
+            'success' => true, 
+            'message' => 'Patient status updated successfully.'
+        ]);
+    }
+}

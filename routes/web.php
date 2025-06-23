@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::get('attendance/doctors', [App\Http\Controllers\AttendanceController::class, 'doctors']);
     Route::resource('attendance', App\Http\Controllers\AttendanceController::class);
     Route::resource('patients', App\Http\Controllers\PatientController::class);
+    Route::post('patients/toggle-status/{id}', [App\Http\Controllers\PatientController::class, 'toggleStatus']);
     Route::resource('opd', App\Http\Controllers\OpdController::class);
     Route::resource('ipd', App\Http\Controllers\IpdController::class);
     Route::resource('item_mapping', App\Http\Controllers\ItemMappingController::class);
