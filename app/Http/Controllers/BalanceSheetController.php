@@ -10,22 +10,30 @@ class BalanceSheetController extends Controller
 {    public function index(Request $request)
     {
         if ($request->ajax()) {
-            $balanceSheets = BalanceSheet::query();
-            
-            return DataTables::of($balanceSheets)
-                ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    return '<div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-primary editBtn" data-id="'.$row->id.'" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger deleteBtn" data-id="'.$row->id.'" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>';
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            try {
+                $balanceSheets = BalanceSheet::query();
+                
+                return DataTables::of($balanceSheets)
+                    ->addIndexColumn()
+                    ->addColumn('action', function ($row) {
+                        return '<div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-primary editBtn" data-id="'.$row->id.'" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger deleteBtn" data-id="'.$row->id.'" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>';
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'error' => true,
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ], 500);
+            }
         }
 
         return view('reports.balance-sheet');
@@ -76,5 +84,17 @@ class BalanceSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to save balance sheet entry.', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    // Debug method to test data retrieval
+    public function debug(Request $request)
+    {
+        $balanceSheets = BalanceSheet::all();
+        return response()->json([
+            'success' => true,
+            'count' => $balanceSheets->count(),
+            'data' => $balanceSheets,
+            'request_is_ajax' => $request->ajax()
+        ]);
     }
 }

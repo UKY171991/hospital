@@ -173,6 +173,7 @@ Route::middleware('auth')->group(function () {
         return view('reports.patient');
     })->name('reports.patient');
     Route::get('/reports/balance-sheet', [App\Http\Controllers\BalanceSheetController::class, 'index']);
+    Route::get('/balance-sheet/debug', [App\Http\Controllers\BalanceSheetController::class, 'debug']); // temporary debug route
     Route::resource('ledgers', LedgerController::class);
     Route::resource('balance-sheet', BalanceSheetController::class);
     Route::get('/patients/register', function() {
