@@ -67,11 +67,26 @@
 
 @push('scripts')
 <script>
+let table;
 $(function() {
+    // Global AJAX setup for CSRF token
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Global AJAX error handler for session expiry
+    $(document).ajaxError(function(event, xhr, settings, thrownError) {
+        if (xhr.status === 419) {
+            alert('Your session has expired. The page will be refreshed to continue.');
+            location.reload();
+        }
+    });
+
     // Load doctor dropdown
     function loadDoctors(selectedId = null) {
         $.get('/schedule/doctors', function(doctors) {
-            console.log('Doctors loaded:', doctors); // Debug log
             let options = '<option value="">Select Any One</option>';
             if (doctors.length === 0) {
                 options += '<option value="" disabled>No doctors found. Please add a doctor first.</option>';
@@ -81,12 +96,15 @@ $(function() {
                 });
             }
             $('#doctor_id').html(options);
+        })
+        .fail(function() {
+            $('#doctor_id').html('<option value="">Failed to load doctors</option>');
         });
     }
     loadDoctors();
 
     // DataTable
-    var table = $('#scheduleTable').DataTable({
+    table = $('#scheduleTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: '/schedule',
@@ -95,13 +113,54 @@ $(function() {
             { data: 'doctor', name: 'doctor' },
             { data: 'available_days', name: 'available_days' },
             { data: 'timing', name: 'timing' },
-            { data: 'status', name: 'status', orderable: false, searchable: false, render: function(data, type, row) {
-                let icon = data === 'Active' ? 'fa-eye text-success' : 'fa-eye-slash text-warning';
-                let nextStatus = data === 'Active' ? 'Inactive' : 'Active';
-                return `<a href="#" class="toggleStatus" data-id="${row.id}" data-status="${nextStatus}"><i class="fas ${icon}"></i></a>`;
-            } },
-            { data: 'action', name: 'action', orderable: false, searchable: false, render: function(data) { return data; } },
-        ]
+            { 
+                data: 'status', 
+                name: 'status', 
+                orderable: false, 
+                searchable: false, 
+                render: function(data, type, row) {
+                    const isActive = data === 'Active';
+                    const statusClass = isActive ? 'success' : 'danger';
+                    const statusText = isActive ? 'Active' : 'Inactive';
+                    const toggleText = isActive ? 'Deactivate' : 'Activate';
+                    const toggleStatus = isActive ? 'Inactive' : 'Active';
+                    
+                    return `
+                        <div class="btn-group" role="group">
+                            <span class="badge badge-${statusClass}">${statusText}</span>
+                            <button type="button" class="btn btn-sm btn-outline-${statusClass} toggleStatus ms-1" 
+                                    data-id="${row.id}" data-status="${toggleStatus}" title="${toggleText}">
+                                <i class="fas fa-toggle-${isActive ? 'on' : 'off'}"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            },
+            { 
+                data: 'action', 
+                name: 'action', 
+                orderable: false, 
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-info editBtn" data-id="${row.id}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        ],
+        responsive: true,
+        language: {
+            processing: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>',
+            emptyTable: 'No schedules found',
+            zeroRecords: 'No matching schedules found'
+        }
     });
 
     // Reset form
@@ -112,6 +171,7 @@ $(function() {
         $('#available_days').val([]).trigger('change');
         $('#start_time').val('');
         $('#end_time').val('');
+        loadDoctors();
     }
 
     // Submit form (add/update)
@@ -119,54 +179,126 @@ $(function() {
         e.preventDefault();
         var id = $('#schedule_id').val();
         var url = id ? '/schedule/' + id : '/schedule';
-        var type = id ? 'POST' : 'POST';
+        var type = 'POST';
         var formData = $(this).serializeArray();
         if (id) formData.push({name: '_method', value: 'PUT'});
+        
         $.ajax({
             url: url,
             type: type,
             data: formData,
-            success: function(res) {
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
                 resetForm();
                 table.ajax.reload();
-                toastr && toastr.success(res.message);
+                // Show success message
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Schedule saved successfully!');
+                }
             },
             error: function(xhr) {
-                toastr && toastr.error(xhr.responseJSON?.message || 'Validation error.');
+                let msg = 'Error: ';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    // Laravel validation errors
+                    for (const key in xhr.responseJSON.errors) {
+                        msg += `\n${xhr.responseJSON.errors[key].join(' ')}`;
+                    }
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg += xhr.responseJSON.message;
+                } else {
+                    msg += 'An error occurred.';
+                }
+                alert(msg);
             }
         });
     });
 
     // Edit button
-    $('#scheduleTable').on('click', '.editBtn', function() {
+    $(document).on('click', '.editBtn', function() {
         var id = $(this).data('id');
-        $.get('/schedule/' + id, function(data) {
-            $('#schedule_id').val(data.id);
+        $.get('/schedule/' + id)
+        .done(function(data) {
+            $('#schedule_id').val(data.id || '');
             loadDoctors(data.doctor_id);
-            $('#available_days').val(data.available_days.split(',')).trigger('change');
-            $('#start_time').val(data.start_time);
-            $('#end_time').val(data.end_time);
+            $('#available_days').val(data.available_days ? data.available_days.split(',') : []).trigger('change');
+            $('#start_time').val(data.start_time || '');
+            $('#end_time').val(data.end_time || '');
+        })
+        .fail(function() {
+            alert('Failed to load schedule data. Please try again.');
         });
     });
 
+    // Delete button
+    $(document).on('click', '.deleteBtn', function() {
+        if(confirm('Are you sure you want to delete this schedule?')) {
+            var id = $(this).data('id');
+            $.ajax({
+                url: '/schedule/' + id,
+                type: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(response) {
+                    table.ajax.reload();
+                    if(response.message) {
+                        alert('Success: ' + response.message);
+                    } else {
+                        alert('Schedule deleted successfully!');
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + (xhr.responseJSON?.message || 'Delete failed.'));
+                }
+            });
+        }
+    });
+
     // Status toggle
-    $('#scheduleTable').on('click', '.toggleStatus', function(e) {
+    $(document).on('click', '.toggleStatus', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
         var status = $(this).data('status');
+        var button = $(this);
+        
+        // Disable button during request
+        button.prop('disabled', true);
+        
         $.ajax({
             url: '/schedule/toggle-status/' + id,
             type: 'POST',
-            data: { status: status, _token: $('meta[name="csrf-token"]').attr('content') },
-            success: function(res) {
+            data: { 
+                status: status
+            },
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
                 table.ajax.reload();
-                toastr && toastr.success(res.message);
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Schedule status updated successfully!');
+                }
             },
             error: function(xhr) {
-                toastr && toastr.error(xhr.responseJSON?.message || 'Status update failed.');
+                console.error('Status toggle error:', xhr.status, xhr.responseText);
+                if (xhr.status === 419) {
+                    alert('Your session has expired. The page will be refreshed to continue.');
+                    location.reload();
+                } else {
+                    let msg = 'Error: ';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg += xhr.responseJSON.message;
+                    } else {
+                        msg += 'Status update failed.';
+                    }
+                    alert(msg);
+                }
+            },
+            complete: function() {
+                button.prop('disabled', false);
             }
         });
     });
 });
 </script>
-@endpush 
+@endpush

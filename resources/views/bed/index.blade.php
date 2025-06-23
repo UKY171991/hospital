@@ -60,9 +60,25 @@
 
 @push('scripts')
 <script>
+let table;
 $(function() {
+    // Global AJAX setup for CSRF token
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Global AJAX error handler for session expiry
+    $(document).ajaxError(function(event, xhr, settings, thrownError) {
+        if (xhr.status === 419) {
+            alert('Your session has expired. The page will be refreshed to continue.');
+            location.reload();
+        }
+    });
+
     // DataTable
-    var table = $('#bedTable').DataTable({
+    table = $('#bedTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: '{{ route('bed.index') }}',
@@ -71,9 +87,54 @@ $(function() {
             { data: 'room', name: 'room.name' },
             { data: 'bed_number', name: 'bed_number' },
             { data: 'description', name: 'description' },
-            { data: 'status', name: 'status', orderable: false, searchable: false },
-            { data: 'action', name: 'action', orderable: false, searchable: false },
-        ]
+            { 
+                data: 'status', 
+                name: 'status', 
+                orderable: false, 
+                searchable: false,
+                render: function(data, type, row) {
+                    const isActive = row.is_active == 1;
+                    const statusClass = isActive ? 'success' : 'danger';
+                    const statusText = isActive ? 'Available' : 'Occupied';
+                    const toggleText = isActive ? 'Mark Occupied' : 'Mark Available';
+                    const toggleStatus = isActive ? 0 : 1;
+                    
+                    return `
+                        <div class="btn-group" role="group">
+                            <span class="badge badge-${statusClass}">${statusText}</span>
+                            <button type="button" class="btn btn-sm btn-outline-${statusClass} toggleStatus ms-1" 
+                                    data-id="${row.id}" data-status="${toggleStatus}" title="${toggleText}">
+                                <i class="fas fa-toggle-${isActive ? 'on' : 'off'}"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            },
+            { 
+                data: 'action', 
+                name: 'action', 
+                orderable: false, 
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-info editBtn" data-id="${row.id}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        ],
+        responsive: true,
+        language: {
+            processing: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>',
+            emptyTable: 'No beds found',
+            zeroRecords: 'No matching beds found'
+        }
     });
 
     // Reset form
@@ -89,79 +150,130 @@ $(function() {
         e.preventDefault();
         var id = $('#bed_id').val();
         var url = id ? '/bed/' + id : '/bed';
-        var type = id ? 'PUT' : 'POST';
+        var type = 'POST';
+        var formData = $(this).serialize();
+        if (id) formData += '&_method=PUT';
+        
         $.ajax({
             url: url,
             type: type,
-            data: $(this).serialize(),
-            success: function(res) {
+            data: formData,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
                 table.ajax.reload();
                 $('#bedForm')[0].reset();
                 $('#bed_id').val('');
                 $('#formTitle').text('Add Bed');
                 $('#saveBtn').text('Save');
-                toastr.success(res.message);
+                // Show success message
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Bed saved successfully!');
+                }
             },
             error: function(xhr) {
-                toastr.error(xhr.responseJSON?.message || 'Validation error.');
+                let msg = 'Error: ';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    // Laravel validation errors
+                    for (const key in xhr.responseJSON.errors) {
+                        msg += `\n${xhr.responseJSON.errors[key].join(' ')}`;
+                    }
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg += xhr.responseJSON.message;
+                } else {
+                    msg += 'An error occurred.';
+                }
+                alert(msg);
             }
         });
     });
 
     // Edit button
-    $('#bedTable').on('click', '.editBtn', function() {
+    $(document).on('click', '.editBtn', function() {
         var id = $(this).data('id');
-        $.get('/bed/' + id, function(data) {
-            $('#bed_id').val(data.id);
-            $('#room_id').val(data.room_id);
-            $('#bed_number').val(data.bed_number);
-            $('#description').val(data.description);
+        $.get('/bed/' + id)
+        .done(function(data) {
+            $('#bed_id').val(data.id || '');
+            $('#room_id').val(data.room_id || '');
+            $('#bed_number').val(data.bed_number || '');
+            $('#description').val(data.description || '');
             $('#formTitle').text('Edit Bed');
             $('#saveBtn').text('Update');
+        })
+        .fail(function() {
+            alert('Failed to load bed data. Please try again.');
         });
     });
 
     // Delete button
-    $('#bedTable').on('click', '.deleteBtn', function() {
-        var id = $(this).data('id');
+    $(document).on('click', '.deleteBtn', function() {
         if(confirm('Are you sure you want to delete this bed?')) {
+            var id = $(this).data('id');
             $.ajax({
                 url: '/bed/' + id,
                 type: 'DELETE',
-                data: { _token: '{{ csrf_token() }}' },
-                success: function(res) {
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(response) {
                     table.ajax.reload();
-                    toastr.success(res.message);
+                    if(response.message) {
+                        alert('Success: ' + response.message);
+                    } else {
+                        alert('Bed deleted successfully!');
+                    }
                 },
                 error: function(xhr) {
-                    toastr.error(xhr.responseJSON?.message || 'Delete failed.');
+                    alert('Error: ' + (xhr.responseJSON?.message || 'Delete failed.'));
                 }
             });
         }
     });
 
     // Status toggle
-    $('#bedTable').on('click', '.toggleStatus', function(e) {
+    $(document).on('click', '.toggleStatus', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
         var status = $(this).data('status');
+        var button = $(this);
+        
+        // Disable button during request
+        button.prop('disabled', true);
+        
         $.ajax({
-            url: '/bed/' + id,
-            type: 'PUT',
-            data: { status: status, _token: '{{ csrf_token() }}' },
-            success: function(res) {
+            url: '/bed/toggle-status/' + id,
+            type: 'POST',
+            data: { 
+                status: status
+            },
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
                 table.ajax.reload();
-                toastr.success(res.message);
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Bed status updated successfully!');
+                }
+            },
+            error: function(xhr) {
+                console.error('Status toggle error:', xhr.status, xhr.responseText);
+                if (xhr.status === 419) {
+                    alert('Your session has expired. The page will be refreshed to continue.');
+                    location.reload();
+                } else {
+                    let msg = 'Error: ';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg += xhr.responseJSON.message;
+                    } else {
+                        msg += 'Status update failed.';
+                    }
+                    alert(msg);
+                }
+            },
+            complete: function() {
+                button.prop('disabled', false);
             }
         });
     });
-
-    // Set CSRF token for all AJAX requests
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
 });
 </script>
-@endpush 
+@endpush

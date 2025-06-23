@@ -1,38 +1,72 @@
 @extends('layouts.app')
 
 @section('content-header')
-<div class="content-header">
     <div class="container-fluid">
-        <h1 class="m-0">Manage Employee</h1>
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 fw-bold">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    Employee Management
+                </h1>
+                <p class="text-muted">Manage hospital staff and employees</p>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Employees</li>
+                </ol>
+            </div>
+        </div>
     </div>
-</div>
 @endsection
 
 @section('content')
 <div class="container-fluid">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0">Manage Employee</h3>
-            <button class="btn btn-primary btn-sm" id="addEmployeeBtn"><i class="fas fa-plus"></i> Create Employee</button>
+    <!-- Action Bar -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 text-primary">
+                                <i class="fas fa-list me-2"></i>Employee Directory
+                            </h5>
+                        </div>
+                        <button class="btn btn-primary btn-lg" id="addEmployeeBtn">
+                            <i class="fas fa-plus me-2"></i>Add New Employee
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Employees Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0">
+            <h6 class="mb-0 text-dark">
+                <i class="fas fa-table me-2"></i>Employee Records
+            </h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="employeeTable" style="width:100%">
-                    <thead class="bg-primary text-white">
+                <table class="table table-striped table-hover" id="employeeTable" style="width:100%">
+                    <thead class="table-primary">
                         <tr>
                             <th>S.No.</th>
                             <th>Photo</th>
                             <th>Name</th>
-                            <th>EmployeeId</th>
+                            <th>Employee ID</th>
                             <th>Department</th>
                             <th>Address</th>
                             <th>Mobile No</th>
-                            <th>Pan No</th>
+                            <th>PAN No</th>
                             <th>Account No</th>
-                            <th>Ifsc Code</th>
-                            <th>Opening Bal</th>
+                            <th>IFSC Code</th>
+                            <th>Opening Balance</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                 </table>
@@ -59,13 +93,33 @@
 <script>
 let table;
 $(function() {
+    // Global AJAX setup for CSRF token
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Global AJAX error handler for session expiry
+    $(document).ajaxError(function(event, xhr, settings, thrownError) {
+        if (xhr.status === 419) {
+            alert('Your session has expired. The page will be refreshed to continue.');
+            location.reload();
+        }
+    });
+
     table = $('#employeeTable').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '/employee',
+        ajax: '/employees',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'photo', name: 'photo', render: function(data){ return data ? `<img src="/storage/employee_photos/${data}" height="40">` : ''; } },
+            { 
+                data: 'photo', 
+                name: 'photo', 
+                orderable: false,
+                searchable: false
+            },
             { data: 'name', name: 'name' },
             { data: 'employee_id', name: 'employee_id' },
             { data: 'department', name: 'department' },
@@ -75,30 +129,70 @@ $(function() {
             { data: 'account_no', name: 'account_no' },
             { data: 'ifsc_code', name: 'ifsc_code' },
             { data: 'opening_balance', name: 'opening_balance' },
-            { data: 'status', name: 'status', render: function(data, type, row){
-                let icon = data === 'Active' ? 'fa-eye text-info' : 'fa-eye-slash text-warning';
-                let nextStatus = data === 'Active' ? 'Inactive' : 'Active';
-                return `<a href="#" class="toggleStatus" data-id="${row.id}" data-status="${nextStatus}"><i class="fas ${icon}"></i></a>`;
-            } },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
+            { 
+                data: 'status', 
+                name: 'status', 
+                orderable: false, 
+                searchable: false
+            },
+            { 
+                data: 'action', 
+                name: 'action', 
+                orderable: false, 
+                searchable: false
+            }
         ],
         dom: 'Bfrtip',
-        buttons: ['excel', 'pdf', 'print', 'colvis']
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn-success'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn-danger'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn-info'
+            },
+            {
+                extend: 'colvis',
+                text: '<i class="fas fa-columns"></i> Columns',
+                className: 'btn-secondary'
+            }
+        ],
+        responsive: true,
+        language: {
+            processing: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>',
+            emptyTable: 'No employees found',
+            zeroRecords: 'No matching employees found'
+        }
     });
 
+    // Add Employee Button
     $('#addEmployeeBtn').click(function(){
         $('#employeeForm')[0].reset();
         $('#employeeId').val('');
-        $('#photoPreview').attr('src', '');
+        $('#photoPreview').attr('src', '').hide();
         $('#employeeModalLabel').text('Add Employee');
         $('#employeeModal').modal('show');
     });
 
+    // Edit Employee
     $(document).on('click', '.editBtn', function(){
         let id = $(this).data('id');
-        $.get('/employee/' + id, function(employee){
+        $.get('/employees/' + id)
+        .done(function(employee){
             $('#employeeId').val(employee.id || '');
-            $('#photoPreview').attr('src', employee.photo ? '/storage/employee_photos/' + employee.photo : '');
+            if(employee.photo) {
+                $('#photoPreview').attr('src', '/storage/employee_photos/' + employee.photo).show();
+            } else {
+                $('#photoPreview').attr('src', '').hide();
+            }
             $('#name').val(employee.name || '');
             $('#employee_id').val(employee.employee_id || '');
             $('#relative_name').val(employee.relative_name || '');
@@ -128,14 +222,23 @@ $(function() {
             $('#status').val(employee.status || 'Active');
             $('#employeeModalLabel').text('Edit Employee');
             $('#employeeModal').modal('show');
+        })
+        .fail(function(){
+            alert('Failed to load employee data. Please try again.');
         });
     });
 
+    // View Employee
     $(document).on('click', '.viewBtn', function(){
         let id = $(this).data('id');
-        $.get('/employee/' + id, function(employee){
+        $.get('/employees/' + id)
+        .done(function(employee){
             $('#viewEmployeeId').val(employee.id);
-            $('#view_photoPreview').attr('src', employee.photo ? '/storage/employee_photos/' + employee.photo : '');
+            if(employee.photo) {
+                $('#view_photoPreview').attr('src', '/storage/employee_photos/' + employee.photo).show();
+            } else {
+                $('#view_photoPreview').attr('src', '').hide();
+            }
             $('#view_name').val(employee.name);
             $('#view_employee_id').val(employee.employee_id);
             $('#view_relative_name').val(employee.relative_name);
@@ -164,50 +267,84 @@ $(function() {
             $('#view_opening_balance').val(employee.opening_balance);
             $('#view_status').val(employee.status);
             $('#viewEmployeeModal').modal('show');
+        })
+        .fail(function(){
+            alert('Failed to load employee data. Please try again.');
         });
     });
 
+    // Delete Employee
     $(document).on('click', '.deleteBtn', function(){
         if(confirm('Are you sure you want to delete this employee?')){
             let id = $(this).data('id');
             $.ajax({
-                url: '/employee/' + id,
+                url: '/employees/' + id,
                 type: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                success: function(){
+                success: function(response){
                     table.ajax.reload();
+                    if(response.message) {
+                        alert('Success: ' + response.message);
+                    } else {
+                        alert('Employee deleted successfully!');
+                    }
                 },
                 error: function(xhr) {
-                    alert('Error: ' + (xhr.responseJSON.message || 'An error occurred.'));
+                    alert('Error: ' + (xhr.responseJSON?.message || 'Delete failed.'));
                 }
             });
         }
     });
 
-    $(document).on('click', '.toggleStatus', function(e){
+    // Toggle Status
+    $('#employeeTable').on('click', '.toggleStatus', function(e) {
         e.preventDefault();
         let id = $(this).data('id');
         let status = $(this).data('status');
+        let $this = $(this);
+        
         $.ajax({
-            url: `/employee/${id}`,
-            type: 'PUT',
-            data: { status: status, _token: $('meta[name="csrf-token"]').attr('content') },
-            success: function(){
+            url: `/employees/toggle-status/${id}`,
+            type: 'POST',
+            data: {
+                status: status,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
                 table.ajax.reload();
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Employee status updated successfully!');
+                }
             },
             error: function(xhr) {
-                alert('Error: ' + (xhr.responseJSON.message || 'An error occurred.'));
+                console.error('Status toggle error:', xhr.status, xhr.responseText);
+                if (xhr.status === 419) {
+                    alert('Your session has expired. The page will be refreshed to continue.');
+                    location.reload();
+                } else {
+                    let msg = 'Error: ';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg += xhr.responseJSON.message;
+                    } else {
+                        msg += 'Status update failed.';
+                    }
+                    alert(msg);
+                }
             }
         });
     });
 
+    // Form Submission
     $('#employeeForm').submit(function(e){
         e.preventDefault();
         let id = $('#employeeId').val();
-        let url = id ? '/employee/' + id : '/employee';
+        let url = id ? '/employees/' + id : '/employees';
         let type = 'POST';
         let formData = new FormData(this);
         if (id) formData.append('_method', 'PUT');
+        
         $.ajax({
             url: url,
             type: type,
@@ -215,15 +352,55 @@ $(function() {
             processData: false,
             contentType: false,
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            success: function(){
+            success: function(response){
                 $('#employeeModal').modal('hide');
                 table.ajax.reload();
+                // Show success message
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Employee saved successfully!');
+                }
             },
             error: function(xhr) {
-                alert('Error: ' + (xhr.responseJSON.message || 'An error occurred.'));
+                let msg = 'Error: ';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    // Laravel validation errors
+                    for (const key in xhr.responseJSON.errors) {
+                        msg += `\n${xhr.responseJSON.errors[key].join(' ')}`;
+                    }
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg += xhr.responseJSON.message;
+                } else {
+                    msg += 'An error occurred.';
+                }
+                alert(msg);
             }
         });
     });
+
+    // Reset Button
+    $(document).on('click', '#resetButton', function(){
+        $('#employeeForm')[0].reset();
+        $('#photoPreview').attr('src', '').hide();
+        $('#employeeId').val('');
+    });
+
+    // Photo Preview
+    $(document).on('change', 'input[name="photo"]', function() {
+        let input = this;
+        let preview = $('#photoPreview');
+        
+        if (input.files && input.files[0]) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                preview.attr('src', e.target.result).show();
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.attr('src', '').hide();
+        }
+    });
 });
 </script>
-@endpush 
+@endpush

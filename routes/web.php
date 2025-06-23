@@ -31,9 +31,26 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+// Health check route for testing
+Route::get('/test', function() {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Hospital Management System is working',
+        'timestamp' => now(),
+        'modules' => [
+            'authentication' => 'working',
+            'database' => 'connected',
+            'routes' => 'loaded'
+        ]
+    ]);
+});
+
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/employee', function () {
+    return redirect('/employees');
+})->middleware('auth');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -42,18 +59,26 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::post('users/status/{id}', [App\Http\Controllers\UserController::class, 'toggleStatus'])->name('users.toggleStatus');
     Route::resource('hospitals', App\Http\Controllers\HospitalController::class);
-    Route::resource('employee', App\Http\Controllers\EmployeeController::class);
+    Route::resource('employees', App\Http\Controllers\EmployeeController::class);
+    Route::post('employees/toggle-status/{id}', [App\Http\Controllers\EmployeeController::class, 'toggleStatus']);
     Route::resource('item', App\Http\Controllers\ItemController::class);
+    Route::post('item/toggle-status/{id}', [App\Http\Controllers\ItemController::class, 'toggleStatus']);
     Route::resource('department', App\Http\Controllers\DepartmentController::class);
+    Route::get('department-test', [App\Http\Controllers\DepartmentController::class, 'testDataTable']);
+    Route::post('department/toggle-status/{id}', [App\Http\Controllers\DepartmentController::class, 'toggleStatus']);
     Route::resource('fee_assign', FeeAssignController::class);
     Route::resource('investigation', InvestigationController::class);
+    Route::post('investigation/toggle-status/{id}', [InvestigationController::class, 'toggleStatus']);
     Route::resource('ward', WardController::class);
+    Route::post('ward/toggle-status/{id}', [WardController::class, 'toggleStatus']);
     Route::resource('bed', BedController::class);
     Route::resource('assign_bed', AssignBedController::class);
     Route::resource('disease', DiseaseController::class);
     Route::resource('room', RoomController::class);
     Route::resource('doctor', App\Http\Controllers\DoctorController::class);
     Route::post('doctor/toggle-status/{id}', [App\Http\Controllers\DoctorController::class, 'toggleStatus']);
+    Route::get('doctor/print/{id}', [App\Http\Controllers\DoctorController::class, 'print'])->name('doctor.print');
+    Route::get('doctor/id_card/{id}', [App\Http\Controllers\DoctorController::class, 'idCard'])->name('doctor.id_card');
     Route::get('schedule/doctors', [App\Http\Controllers\DoctorScheduleController::class, 'getDoctors']);
     Route::post('schedule/toggle-status/{id}', [App\Http\Controllers\DoctorScheduleController::class, 'toggleStatus']);
     Route::resource('schedule', App\Http\Controllers\DoctorScheduleController::class);

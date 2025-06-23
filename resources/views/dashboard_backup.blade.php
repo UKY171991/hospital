@@ -34,6 +34,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- Patients -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-sm text-white bg-gradient-success h-100">
@@ -53,6 +54,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- Employees -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-sm text-white bg-gradient-info h-100">
@@ -72,6 +74,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- Revenue -->
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-sm text-white bg-gradient-warning h-100">
@@ -111,6 +114,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-sm text-white bg-gradient-dark h-100">
                 <div class="card-body d-flex align-items-center">
@@ -127,6 +131,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-sm text-white bg-gradient-teal h-100">
                 <div class="card-body d-flex align-items-center">
@@ -145,6 +150,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-3 col-md-6">
             <div class="card dashboard-card border-0 shadow-sm text-white bg-gradient-orange h-100">
                 <div class="card-body d-flex align-items-center">
@@ -209,6 +215,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white border-0">
@@ -276,6 +283,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-white border-0">
@@ -336,6 +344,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-white border-0">
@@ -381,6 +390,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-white border-0">
@@ -422,6 +432,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white border-0">
@@ -448,6 +459,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white border-0">
@@ -503,6 +515,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white border-0">
@@ -545,6 +558,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-lg-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-white border-0">

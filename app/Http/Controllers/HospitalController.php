@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Hospital;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class HospitalController extends Controller
 {

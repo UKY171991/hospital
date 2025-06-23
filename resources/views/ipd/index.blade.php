@@ -1,53 +1,101 @@
 @extends('layouts.app')
 
-@section('content')
+@section('content-header')
 <div class="container-fluid">
     <div class="row mb-2">
-        <div class="col-12 text-right">
-            <button class="btn btn-primary" id="addIpdBtn">+ Add IPD Patient</button>
-            <button class="btn btn-success" id="dischargedBtn">Discharged Patients</button>
-            <button class="btn btn-info" id="newReceiptBtn">+ New Receipt</button>
+        <div class="col-sm-6">
+            <h1><i class="fas fa-bed mr-2"></i>IPD Management</h1>
+            <p class="text-muted">Manage inpatient department admissions and discharges</p>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+                <li class="breadcrumb-item active">IPD</li>
+            </ol>
         </div>
     </div>
-    <div class="card mb-3">
+</div>
+@endsection
+
+@section('content')
+<div class="container-fluid">
+    <!-- Action Bar -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body py-2">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <h5 class="mb-0 text-primary">
+                            <i class="fas fa-list mr-2"></i>IPD Patient List
+                        </h5>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-primary" id="addIpdBtn">
+                                <i class="fas fa-plus mr-1"></i>Add IPD Patient
+                            </button>
+                            <button class="btn btn-warning" id="dischargedBtn">
+                                <i class="fas fa-sign-out-alt mr-1"></i>Discharged Patients
+                            </button>
+                            <button class="btn btn-success" id="newReceiptBtn">
+                                <i class="fas fa-receipt mr-1"></i>New Receipt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-3 shadow-sm">
+        <div class="card-header bg-light">
+            <h6 class="mb-0"><i class="fas fa-filter mr-2"></i>Filter Options</h6>
+        </div>
         <div class="card-body">
-            <form id="filterForm" class="form-row align-items-end">
-                <div class="form-group col-md-4">
-                    <label>From Date</label>
+            <form id="filterForm" class="row align-items-end">
+                <div class="col-md-4 mb-2">
+                    <label for="from_date"><i class="fas fa-calendar mr-1"></i>From Date</label>
                     <input type="datetime-local" name="from_date" id="from_date" class="form-control" value="{{ date('Y-m-d\TH:i') }}">
                 </div>
-                <div class="form-group col-md-4">
-                    <label>To Date</label>
+                <div class="col-md-4 mb-2">
+                    <label for="to_date"><i class="fas fa-calendar mr-1"></i>To Date</label>
                     <input type="datetime-local" name="to_date" id="to_date" class="form-control" value="{{ date('Y-m-d\TH:i') }}">
                 </div>
-                <div class="form-group col-md-4">
-                    <button type="submit" class="btn btn-success mt-4"><i class="fas fa-search"></i> Search Report</button>
+                <div class="col-md-4 mb-2">
+                    <button type="submit" class="btn btn-success btn-block">
+                        <i class="fas fa-search mr-1"></i>Search Report
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-    <div class="card">
+
+    <!-- IPD Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="fas fa-table mr-2"></i>IPD Patients</h6>
+        </div>
         <div class="card-body">
-            <table class="table table-bordered table-striped" id="ipdTable" style="width:100%">
-                <thead class="bg-danger text-white">
-                    <tr>
-                        <th>Action</th>
-                        <th>S.No</th>
-                        <th>IPD No</th>
-                        <th>UHID No</th>
-                        <th>Patient Name</th>
-                        <th>Attendant Name</th>
-                        <th>Attendant Mobile</th>
-                        <th>Second Attendant Name</th>
-                        <th>Second Attendant Mobile</th>
-                        <th>Admission Date</th>
-                        <th>Discharge Date</th>
-                        <th>Doctor Name</th>
-                        <th>Disease</th>
-                        <th>Department</th>
-                        <th>Ward Name</th>
-                        <th>Room No</th>
-                        <th>Bed No</th>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="ipdTable" style="width:100%">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th><i class="fas fa-cogs"></i> Action</th>
+                            <th>S.No</th>
+                            <th>IPD No</th>
+                            <th>UHID No</th>
+                            <th><i class="fas fa-user"></i> Patient Name</th>
+                            <th><i class="fas fa-user-friends"></i> Attendant Name</th>
+                            <th><i class="fas fa-phone"></i> Attendant Mobile</th>
+                            <th>Second Attendant Name</th>
+                            <th>Second Attendant Mobile</th>
+                            <th><i class="fas fa-calendar-plus"></i> Admission Date</th>
+                            <th><i class="fas fa-calendar-minus"></i> Discharge Date</th>
+                            <th><i class="fas fa-user-md"></i> Doctor Name</th>
+                            <th><i class="fas fa-disease"></i> Disease</th>
+                            <th><i class="fas fa-building"></i> Department</th>
+                            <th><i class="fas fa-door-open"></i> Ward Name</th>
+                            <th><i class="fas fa-hashtag"></i> Room No</th>
+                            <th><i class="fas fa-bed"></i> Bed No</th>
                         <th>Employee</th>
                         <th>Bill No</th>
                         <th>Insurance</th>

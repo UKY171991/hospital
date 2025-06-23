@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ward;
 use Illuminate\Http\Request;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class WardController extends Controller
 {
@@ -15,9 +15,9 @@ class WardController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function($row){
-                    $icon = $row->status === 'Active' ? 'fa-eye text-success' : 'fa-eye-slash text-warning';
-                    $nextStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
-                    return '<a href="#" class="toggleStatus" data-id="'.$row->id.'" data-status="'.$nextStatus.'"><i class="fas '.$icon.'"></i></a>';
+                    $statusClass = $row->status === 'Active' ? 'success' : 'danger';
+                    $newStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
+                    return '<button class="btn btn-'.$statusClass.' btn-xs toggleStatus" data-id="'.$row->id.'" data-status="'.$newStatus.'">'.$row->status.'</button>';
                 })
                 ->addColumn('action', function($row){
                     return '<button class="btn btn-primary btn-xs editBtn" data-id="'.$row->id.'"><i class="fas fa-edit"></i></button> '
@@ -67,5 +67,13 @@ class WardController extends Controller
         $ward = Ward::findOrFail($id);
         $ward->delete();
         return response()->json(['success' => true, 'message' => 'Ward deleted successfully.']);
+    }
+
+    public function toggleStatus($id, Request $request)
+    {
+        $ward = Ward::findOrFail($id);
+        $ward->status = $request->status;
+        $ward->save();
+        return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
     }
 }

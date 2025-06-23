@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SaleItem;
 use Illuminate\Http\Request;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class SaleItemController extends Controller
 {

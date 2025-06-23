@@ -3,8 +3,7 @@
     <form id="employeeForm" enctype="multipart/form-data">
       @csrf
       <input type="hidden" name="id" id="employeeId">
-      <div class="modal-content">
-        <div class="modal-header">
+      <div class="modal-content">        <div class="modal-header">
           <h5 class="modal-title" id="employeeModalLabel"></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -146,8 +145,7 @@
               <img id="photoPreview" src="" style="max-height:40px; margin-top:5px;">
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
+        </div>        <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Save</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
@@ -161,8 +159,7 @@
   <div class="modal-dialog modal-xl" role="document">
     <form>
       <input type="hidden" id="viewEmployeeId">
-      <div class="modal-content">
-        <div class="modal-header">
+      <div class="modal-content">        <div class="modal-header">
           <h5 class="modal-title" id="viewEmployeeModalLabel">View Employee</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AssignBed;
 use App\Models\Bed;
 use Illuminate\Http\Request;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class AssignBedController extends Controller
 {

@@ -8,8 +8,14 @@
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             @php
-                $setupActive = request()->is('departments*') || request()->is('disease*') || request()->is('fee-assign*') || request()->is('investigations*') || request()->is('wards*') || request()->is('rooms*') || request()->is('beds*') || request()->is('assign-beds*');
-                $attendanceActive = request()->is('attendance*');
+                $setupActive = request()->routeIs('department.*') || request()->routeIs('disease.*') || request()->routeIs('fee_assign.*') || request()->routeIs('investigation.*') || request()->routeIs('ward.*') || request()->routeIs('room.*') || request()->routeIs('bed.*') || request()->routeIs('assign_bed.*');
+                $doctorActive = request()->routeIs('doctor.*') || request()->routeIs('schedule.*');
+                $patientActive = request()->routeIs('patients.*') || request()->routeIs('opd.*') || request()->routeIs('ipd.*') || request()->routeIs('item_mapping.*');
+                $inventoryActive = request()->routeIs('suppliers.*') || request()->routeIs('sale_item.*') || request()->routeIs('purchase_item.*') || request()->routeIs('item_stock.*');
+                $frontOfficeActive = request()->routeIs('complaint_type.*') || request()->routeIs('reference.*') || request()->routeIs('enquiry.*') || request()->routeIs('complaint.*') || request()->routeIs('postal_dispatch.*') || request()->routeIs('postal_receive.*') || request()->routeIs('call_log.*');
+                $incomeExpenseActive = request()->routeIs('income_category.*') || request()->routeIs('income_item.*') || request()->is('income_expense*');
+                $accountsActive = request()->routeIs('payment.*') || request()->routeIs('receipt.*') || request()->routeIs('quick-receipt');
+                $reportsActive = request()->is('reports/*');
             @endphp
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
@@ -31,7 +37,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('employee.index') }}" class="nav-link {{ request()->routeIs('employee.*') ? 'active' : '' }}">
+                    <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-tie"></i>
                         <p>Employee</p>
                     </a>
@@ -104,9 +110,6 @@
                 </li>
 
                 <!-- Doctor Menu -->
-                @php
-                    $doctorActive = request()->is('doctor*') || request()->is('schedule*');
-                @endphp
                 <li class="nav-item has-treeview {{ $doctorActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $doctorActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-md"></i>
@@ -117,7 +120,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/doctor') }}" class="nav-link {{ request()->is('doctor*') ? 'active' : '' }}">
+                            <a href="{{ route('doctor.index') }}" class="nav-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Doctor Registration</p>
                             </a>
@@ -139,15 +142,14 @@
                 </li>
 
                 <!-- Patient Menu -->
-                @php
-                    $patientActive = request()->routeIs('patient.*') || request()->routeIs('opd.*') || request()->routeIs('ipd.*') || request()->routeIs('item_mapping.*');
-                @endphp
                 <li class="nav-item has-treeview {{ $patientActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $patientActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-procedures"></i>
                         <p>
                             Patient
                             <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
@@ -179,9 +181,6 @@
                 </li>
 
                 <!-- Inventory Menu -->
-                @php
-                    $inventoryActive = request()->is('suppliers*') || request()->is('sale_item*') || request()->is('purchase_item*') || request()->is('item_stock*');
-                @endphp
                 <li class="nav-item has-treeview {{ $inventoryActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $inventoryActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-warehouse"></i>
@@ -192,25 +191,25 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/suppliers') }}" class="nav-link {{ request()->is('suppliers*') ? 'active' : '' }}">
+                            <a href="{{ route('suppliers.index') }}" class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Suppliers</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/sale_item') }}" class="nav-link {{ request()->is('sale_item*') ? 'active' : '' }}">
+                            <a href="{{ route('sale_item.index') }}" class="nav-link {{ request()->routeIs('sale_item.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sale Item</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/purchase_item') }}" class="nav-link {{ request()->is('purchase_item*') ? 'active' : '' }}">
+                            <a href="{{ route('purchase_item.index') }}" class="nav-link {{ request()->routeIs('purchase_item.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Purchase Item</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/item_stock') }}" class="nav-link {{ request()->is('item_stock*') ? 'active' : '' }}">
+                            <a href="{{ route('item_stock.index') }}" class="nav-link {{ request()->routeIs('item_stock.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Item Stock</p>
                             </a>
@@ -219,9 +218,6 @@
                 </li>
 
                 <!-- Front-Office Menu -->
-                @php
-                    $frontOfficeActive = request()->is('complaint-type*') || request()->is('reference*') || request()->is('enquiry*') || request()->is('complaint*') || request()->is('postal-dispatch*') || request()->is('postal-receive*') || request()->is('call-log*');
-                @endphp
                 <li class="nav-item has-treeview {{ $frontOfficeActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $frontOfficeActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-headset"></i>
@@ -256,19 +252,19 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/postal-dispatch') }}" class="nav-link {{ request()->is('postal-dispatch*') ? 'active' : '' }}">
+                            <a href="{{ route('postal_dispatch.index') }}" class="nav-link {{ request()->routeIs('postal_dispatch.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Postal Dispatch</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/postal-receive') }}" class="nav-link {{ request()->is('postal-receive*') ? 'active' : '' }}">
+                            <a href="{{ route('postal_receive.index') }}" class="nav-link {{ request()->routeIs('postal_receive.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Postal Receive</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/call-log') }}" class="nav-link {{ request()->is('call-log*') ? 'active' : '' }}">
+                            <a href="{{ route('call_log.index') }}" class="nav-link {{ request()->routeIs('call_log.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Call Log</p>
                             </a>
@@ -277,9 +273,6 @@
                 </li>
 
                 <!-- Income/Expenses Menu -->
-                @php
-                    $incomeExpenseActive = request()->is('income-expense-category*') || request()->is('income-expense-item*') || request()->is('income-expense*');
-                @endphp
                 <li class="nav-item has-treeview {{ $incomeExpenseActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $incomeExpenseActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-money-bill-wave"></i>
@@ -311,9 +304,6 @@
                 </li>
 
                 <!-- Accounts Menu -->
-                @php
-                    $accountsActive = request()->is('payment*') || request()->is('receipt*') || request()->is('quick-receipt*');
-                @endphp
                 <li class="nav-item has-treeview {{ $accountsActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $accountsActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calculator"></i>
@@ -324,20 +314,20 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/payment') }}" class="nav-link {{ request()->is('payment*') ? 'active' : '' }}">
+                            <a href="{{ route('payment.index') }}" class="nav-link {{ request()->routeIs('payment.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Payment</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/receipt') }}" class="nav-link {{ request()->is('receipt*') ? 'active' : '' }}">
+                            <a href="{{ route('receipt.index') }}" class="nav-link {{ request()->routeIs('receipt.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Receipt</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/quick-receipt') }}" class="nav-link {{ request()->is('quick-receipt*') ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-receipt"></i>
+                            <a href="{{ route('quick-receipt') }}" class="nav-link {{ request()->routeIs('quick-receipt') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Quick Receipt</p>
                             </a>
                         </li>
@@ -345,8 +335,8 @@
                 </li>
 
                 <!-- Reports Menu (AdminLTE 3 style) -->
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                <li class="nav-item has-treeview {{ $reportsActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $reportsActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-alt"></i>
                         <p>
                             Reports
@@ -355,15 +345,15 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ url('/reports/ledger') }}" class="nav-link">
+                            <a href="{{ url('/reports/ledger') }}" class="nav-link {{ request()->is('reports/ledger*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Ledger</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('/reports/day-book') }}" class="nav-link">
+                            <a href="{{ url('/reports/patient') }}" class="nav-link {{ request()->is('reports/patient*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Day Book</p>
+                                <p>Patient Report</p>
                             </a>
                         </li>
                         <li class="nav-item">

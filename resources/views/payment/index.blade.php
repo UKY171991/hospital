@@ -1,21 +1,58 @@
 @extends('layouts.app')
 
 @section('content-header')
-    <h1>Payment Manage</h1>
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 fw-bold">
+                    <i class="fas fa-credit-card text-primary me-2"></i>
+                    Payment Management
+                </h1>
+                <p class="text-muted">Manage hospital payments and financial transactions</p>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Payments</li>
+                </ol>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('content')
 <div class="container-fluid">
-    <div class="card card-primary card-outline">
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <button class="btn btn-primary" id="addPaymentBtn"><i class="fas fa-plus"></i> Create Payment</button>
+    <!-- Action Bar -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 text-primary">
+                                <i class="fas fa-list me-2"></i>Payment Records
+                            </h5>
+                        </div>
+                        <button class="btn btn-primary btn-lg" id="addPaymentBtn">
+                            <i class="fas fa-plus me-2"></i>Create New Payment
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- Payments Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0">
+            <h6 class="mb-0 text-dark">
+                <i class="fas fa-table me-2"></i>Payment Transactions
+            </h6>
+        </div>
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped" id="paymentTable" style="width:100%">
-                    <thead class="bg-primary text-white">
+                <table class="table table-striped table-hover" id="paymentTable" style="width:100%">
+                    <thead class="table-primary">
                         <tr>
                             <th>S No</th>
                             <th>Name</th>
@@ -26,7 +63,7 @@
                             <th>Paid Amount</th>
                             <th>Due Amount</th>
                             <th>Narration</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                 </table>

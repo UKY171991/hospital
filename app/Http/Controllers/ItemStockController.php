@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\PurchaseItem;
 use App\Models\SaleItem;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class ItemStockController extends Controller
 {

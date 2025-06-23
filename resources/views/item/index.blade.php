@@ -54,6 +54,21 @@
 <script>
 let table;
 $(function() {
+    // Global AJAX setup for CSRF token
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Global AJAX error handler for session expiry
+    $(document).ajaxError(function(event, xhr, settings, thrownError) {
+        if (xhr.status === 419) {
+            alert('Your session has expired. The page will be refreshed to continue.');
+            location.reload();
+        }
+    });
+
     table = $('#itemTable').DataTable({
         processing: true,
         serverSide: true,
@@ -67,10 +82,54 @@ $(function() {
             { data: 'unit', name: 'unit' },
             { data: 'opening_stock', name: 'opening_stock' },
             { data: 'current_stock', name: 'current_stock' },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
+            { 
+                data: 'action', 
+                name: 'action', 
+                orderable: false, 
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-info editBtn" data-id="${row.id}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }
         ],
         dom: 'Bfrtip',
-        buttons: ['excel', 'pdf', 'print', 'colvis']
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn-success'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn-danger'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn-info'
+            },
+            {
+                extend: 'colvis',
+                text: '<i class="fas fa-columns"></i> Columns',
+                className: 'btn-secondary'
+            }
+        ],
+        responsive: true,
+        language: {
+            processing: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>',
+            emptyTable: 'No items found',
+            zeroRecords: 'No matching items found'
+        }
     });
 
     $('#addItemBtn').click(function(){
@@ -82,7 +141,8 @@ $(function() {
 
     $(document).on('click', '.editBtn', function(){
         let id = $(this).data('id');
-        $.get('/item/' + id, function(item){
+        $.get('/item/' + id)
+        .done(function(item){
             $('#itemId').val(item.id || '');
             $('#type').val(item.type || '');
             $('#item_name').val(item.item_name || '');
@@ -94,22 +154,73 @@ $(function() {
             $('#opening_stock').val(item.opening_stock || '');
             $('#itemModalLabel').text('Edit Item');
             $('#itemModal').modal('show');
+        })
+        .fail(function() {
+            alert('Failed to load item data. Please try again.');
         });
+    });
+
+    $(document).on('click', '.deleteBtn', function() {
+        if(confirm('Are you sure you want to delete this item?')) {
+            let id = $(this).data('id');
+            $.ajax({
+                url: '/item/' + id,
+                type: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(response) {
+                    table.ajax.reload();
+                    if(response.message) {
+                        alert('Success: ' + response.message);
+                    } else {
+                        alert('Item deleted successfully!');
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + (xhr.responseJSON?.message || 'Delete failed.'));
+                }
+            });
+        }
     });
 
     $(document).on('click', '.toggleStatus', function(e){
         e.preventDefault();
         let id = $(this).data('id');
         let status = $(this).data('status');
+        let button = $(this);
+        
+        // Disable button during request
+        button.prop('disabled', true);
+        
         $.ajax({
-            url: `/item/${id}`,
-            type: 'PUT',
-            data: { status: status, _token: $('meta[name="csrf-token"]').attr('content') },
-            success: function(){
+            url: `/item/toggle-status/${id}`,
+            type: 'POST',
+            data: { status: status },
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response){
                 table.ajax.reload();
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Item status updated successfully!');
+                }
             },
             error: function(xhr) {
-                alert('Error: ' + (xhr.responseJSON.message || 'An error occurred.'));
+                console.error('Status toggle error:', xhr.status, xhr.responseText);
+                if (xhr.status === 419) {
+                    alert('Your session has expired. The page will be refreshed to continue.');
+                    location.reload();
+                } else {
+                    let msg = 'Error: ';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg += xhr.responseJSON.message;
+                    } else {
+                        msg += 'Status update failed.';
+                    }
+                    alert(msg);
+                }
+            },
+            complete: function() {
+                button.prop('disabled', false);
             }
         });
     });
@@ -121,17 +232,35 @@ $(function() {
         let type = 'POST';
         let formData = $(this).serialize();
         if (id) formData += '&_method=PUT';
+        
         $.ajax({
             url: url,
             type: type,
             data: formData,
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            success: function(){
+            success: function(response){
                 $('#itemModal').modal('hide');
                 table.ajax.reload();
+                // Show success message
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Item saved successfully!');
+                }
             },
             error: function(xhr) {
-                alert('Error: ' + (xhr.responseJSON.message || 'An error occurred.'));
+                let msg = 'Error: ';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    // Laravel validation errors
+                    for (const key in xhr.responseJSON.errors) {
+                        msg += `\n${xhr.responseJSON.errors[key].join(' ')}`;
+                    }
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg += xhr.responseJSON.message;
+                } else {
+                    msg += 'An error occurred.';
+                }
+                alert(msg);
             }
         });
     });

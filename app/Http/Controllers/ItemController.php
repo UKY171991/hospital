@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use Illuminate\Http\Request;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class ItemController extends Controller
 {
@@ -76,5 +76,17 @@ class ItemController extends Controller
         $item = Item::findOrFail($id);
         $item->delete();
         return response()->json(['success' => true, 'message' => 'Item deleted successfully.']);
+    }
+
+    public function toggleStatus($id, Request $request)
+    {
+        $item = Item::findOrFail($id);
+        $item->status = $request->status;
+        $item->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Item status updated successfully.'
+        ]);
     }
 }

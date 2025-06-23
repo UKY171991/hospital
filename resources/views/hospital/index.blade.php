@@ -1,23 +1,58 @@
 @extends('layouts.app')
 
 @section('content-header')
-<div class="content-header">
     <div class="container-fluid">
-        <h1 class="m-0">Manage Hospital</h1>
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 fw-bold">
+                    <i class="fas fa-hospital text-primary me-2"></i>
+                    Hospital Management
+                </h1>
+                <p class="text-muted">Manage hospital information and settings</p>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Hospitals</li>
+                </ol>
+            </div>
+        </div>
     </div>
-</div>
 @endsection
 
 @section('content')
 <div class="container-fluid">
-    <div class="card card-primary card-outline">
-        <div class="card-body">
-            <div class="d-flex justify-content-end mb-2">
-                <button class="btn btn-primary btn-xs" id="addHospitalBtn"><i class="fas fa-plus"></i> Add Hospital</button>
+    <!-- Action Bar -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0 text-primary">
+                                <i class="fas fa-list me-2"></i>Hospital Directory
+                            </h5>
+                        </div>
+                        <button class="btn btn-primary btn-lg" id="addHospitalBtn">
+                            <i class="fas fa-plus me-2"></i>Add New Hospital
+                        </button>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- Hospitals Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0">
+            <h6 class="mb-0 text-dark">
+                <i class="fas fa-table me-2"></i>Hospital Records
+            </h6>
+        </div>
+        <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped" id="hospitalTable" style="width:100%">
-                    <thead class="bg-primary text-white">
+                <table class="table table-striped table-hover" id="hospitalTable" style="width:100%">
+                    <thead class="table-primary">
                         <tr>
                             <th>S.No.</th>
                             <th>Logo</th>
@@ -26,7 +61,7 @@
                             <th>Contact No</th>
                             <th>PAN No</th>
                             <th>Address</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                 </table>
@@ -53,37 +88,115 @@
 <script>
 let table;
 $(function() {
+    // Global AJAX setup for CSRF token
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    // Global AJAX error handler for session expiry
+    $(document).ajaxError(function(event, xhr, settings, thrownError) {
+        if (xhr.status === 419) {
+            alert('Your session has expired. The page will be refreshed to continue.');
+            location.reload();
+        }
+    });
+
     table = $('#hospitalTable').DataTable({
         processing: true,
         serverSide: true,
         ajax: '/hospitals',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-            { data: 'logo', name: 'logo', render: function(data){ return data ? `<img src="/storage/hospital_logos/${data}" height="40">` : ''; } },
+            { 
+                data: 'logo', 
+                name: 'logo', 
+                orderable: false,
+                render: function(data){ 
+                    return data ? `<img src="/storage/hospital_logos/${data}" height="40" class="rounded">` : '<span class="text-muted">No Logo</span>'; 
+                } 
+            },
             { data: 'login_details', name: 'login_details', orderable: false, searchable: false },
             { data: 'name', name: 'name' },
             { data: 'contact_no', name: 'contact_no' },
             { data: 'pan_no', name: 'pan_no' },
             { data: 'address', name: 'address' },
-            { data: 'action', name: 'action', orderable: false, searchable: false }
+            { 
+                data: 'action', 
+                name: 'action', 
+                orderable: false, 
+                searchable: false,
+                render: function(data, type, row){
+                    return `
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-info editBtn" data-id="${row.id}" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary viewBtn" data-id="${row.id}" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }
         ],
         dom: 'Bfrtip',
-        buttons: ['excel', 'pdf', 'print', 'colvis']
-    });
-
-    $('#addHospitalBtn').click(function(){
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn-success'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn-danger'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn-info'
+            },
+            {
+                extend: 'colvis',
+                text: '<i class="fas fa-columns"></i> Columns',
+                className: 'btn-secondary'
+            }
+        ],
+        responsive: true,
+        language: {
+            processing: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>',
+            emptyTable: 'No hospitals found',
+            zeroRecords: 'No matching hospitals found'
+        }
+    });    $('#addHospitalBtn').click(function(){
         $('#hospitalForm')[0].reset();
         $('#hospitalId').val('');
-        $('#logoPreview').attr('src', '');
+        // Clear all preview images
+        $('#logoPreview').attr('src', '').hide();
+        $('#signaturePreview').attr('src', '').hide();
+        $('#stampPreview').attr('src', '').hide();
+        $('#paymentQrPreview').attr('src', '').hide();
+        $('#letterHeadPreview').attr('src', '').hide();
+        $('#idcardDesignPreview').attr('src', '').hide();
         $('#hospitalModalLabel').text('Add Hospital');
         $('#hospitalModal').modal('show');
     });
 
     $(document).on('click', '.editBtn', function(){
         let id = $(this).data('id');
-        $.get('/hospitals/' + id, function(hospital){
+        $.get('/hospitals/' + id)
+        .done(function(hospital){
             $('#hospitalId').val(hospital.id || '');
-            $('#logoPreview').attr('src', hospital.logo ? '/storage/' + hospital.logo : '');
+            if(hospital.logo) {
+                $('#logoPreview').attr('src', '/storage/hospital_logos/' + hospital.logo).show();
+            } else {
+                $('#logoPreview').attr('src', '').hide();
+            }
             $('#username').val(hospital.username || '');
             $('#password').val('');
             $('#passcode').val(hospital.passcode || '');
@@ -100,13 +213,38 @@ $(function() {
             $('#gstin_no').val(hospital.gstin_no || '');
             $('#cin_no').val(hospital.cin_no || '');
             $('#hospital_prefix').val(hospital.hospital_prefix || '');
-            $('#signaturePreview').attr('src', hospital.signature ? '/storage/' + hospital.signature : '');
-            $('#stampPreview').attr('src', hospital.stamp ? '/storage/' + hospital.stamp : '');
-            $('#paymentQrPreview').attr('src', hospital.payment_qr ? '/storage/' + hospital.payment_qr : '');
-            $('#letterHeadPreview').attr('src', hospital.letter_head ? '/storage/' + hospital.letter_head : '');
-            $('#idcardDesignPreview').attr('src', hospital.idcard_design ? '/storage/' + hospital.idcard_design : '');
+            
+            if(hospital.signature) {
+                $('#signaturePreview').attr('src', '/storage/hospital_logos/' + hospital.signature).show();
+            } else {
+                $('#signaturePreview').attr('src', '').hide();
+            }
+            if(hospital.stamp) {
+                $('#stampPreview').attr('src', '/storage/hospital_logos/' + hospital.stamp).show();
+            } else {
+                $('#stampPreview').attr('src', '').hide();
+            }
+            if(hospital.payment_qr) {
+                $('#paymentQrPreview').attr('src', '/storage/hospital_logos/' + hospital.payment_qr).show();
+            } else {
+                $('#paymentQrPreview').attr('src', '').hide();
+            }
+            if(hospital.letter_head) {
+                $('#letterHeadPreview').attr('src', '/storage/hospital_logos/' + hospital.letter_head).show();
+            } else {
+                $('#letterHeadPreview').attr('src', '').hide();
+            }
+            if(hospital.idcard_design) {
+                $('#idcardDesignPreview').attr('src', '/storage/hospital_logos/' + hospital.idcard_design).show();
+            } else {
+                $('#idcardDesignPreview').attr('src', '').hide();
+            }
+            
             $('#hospitalModalLabel').text('Edit Hospital');
             $('#hospitalModal').modal('show');
+        })
+        .fail(function(){
+            alert('Failed to load hospital data. Please try again.');
         });
     });
 
@@ -114,7 +252,7 @@ $(function() {
         let id = $(this).data('id');
         $.get('/hospitals/' + id, function(hospital){
             $('#viewHospitalId').val(hospital.id);
-            $('#view_logoPreview').attr('src', hospital.logo ? '/storage/' + hospital.logo : '');
+            $('#view_logoPreview').attr('src', hospital.logo ? '/storage/hospital_logos/' + hospital.logo : '');
             $('#view_username').val(hospital.username);
             $('#view_passcode').val(hospital.passcode);
             $('#view_name').val(hospital.name);
@@ -130,11 +268,11 @@ $(function() {
             $('#view_gstin_no').val(hospital.gstin_no);
             $('#view_cin_no').val(hospital.cin_no);
             $('#view_hospital_prefix').val(hospital.hospital_prefix);
-            $('#view_signaturePreview').attr('src', hospital.signature ? '/storage/' + hospital.signature : '');
-            $('#view_stampPreview').attr('src', hospital.stamp ? '/storage/' + hospital.stamp : '');
-            $('#view_paymentQrPreview').attr('src', hospital.payment_qr ? '/storage/' + hospital.payment_qr : '');
-            $('#view_letterHeadPreview').attr('src', hospital.letter_head ? '/storage/' + hospital.letter_head : '');
-            $('#view_idcardDesignPreview').attr('src', hospital.idcard_design ? '/storage/' + hospital.idcard_design : '');
+            $('#view_signaturePreview').attr('src', hospital.signature ? '/storage/hospital_logos/' + hospital.signature : '');
+            $('#view_stampPreview').attr('src', hospital.stamp ? '/storage/hospital_logos/' + hospital.stamp : '');
+            $('#view_paymentQrPreview').attr('src', hospital.payment_qr ? '/storage/hospital_logos/' + hospital.payment_qr : '');
+            $('#view_letterHeadPreview').attr('src', hospital.letter_head ? '/storage/hospital_logos/' + hospital.letter_head : '');
+            $('#view_idcardDesignPreview').attr('src', hospital.idcard_design ? '/storage/hospital_logos/' + hospital.idcard_design : '');
             $('#viewHospitalModal').modal('show');
         });
     });
@@ -160,24 +298,54 @@ $(function() {
         e.preventDefault();
         let id = $('#hospitalId').val();
         let url = id ? '/hospitals/' + id : '/hospitals';
-        let type = 'POST';
-        let formData = new FormData(this);
+        let type = 'POST';        let formData = new FormData(this);
         if (id) formData.append('_method', 'PUT');
+        
         $.ajax({
             url: url,
             type: type,
             data: formData,
             processData: false,
             contentType: false,
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            success: function(){
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },            success: function(response){
                 $('#hospitalModal').modal('hide');
                 table.ajax.reload();
-            },
-            error: function(xhr) {
-                alert('Error: ' + (xhr.responseJSON.message || 'An error occurred.'));
+                // Show success message
+                if(response.message) {
+                    alert('Success: ' + response.message);
+                } else {
+                    alert('Hospital saved successfully!');
+                }
+            },            error: function(xhr) {
+                let msg = 'Error: ';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    // Laravel validation errors
+                    for (const key in xhr.responseJSON.errors) {
+                        msg += `\n${xhr.responseJSON.errors[key].join(' ')}`;
+                    }
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg += xhr.responseJSON.message;
+                } else {
+                    msg += 'An error occurred.';
+                }
+                alert(msg);
             }
         });
+    });
+
+    // Live preview for image fields in add/edit modal
+    $('#hospitalForm input[type="file"]').on('change', function() {
+        const input = this;
+        const previewId = '#' + $(input).attr('name') + 'Preview';
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $(previewId).attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            $(previewId).attr('src', '');
+        }
     });
 });
 </script>

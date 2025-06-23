@@ -19,11 +19,12 @@ class DoctorController extends Controller
             return datatables()->of($doctors)
                 ->addIndexColumn()
                 ->addColumn('photo', function($row) {
-                    $src = $row->photo ? asset('storage/doctor_photos/' . $row->photo) : 'https://via.placeholder.com/60x60?text=No+Image';
-                    return '<img src="'.$src.'" class="img-thumbnail" style="max-width:60px;">';
+                    return $row->photo ? '<img src="/storage/doctor_photos/' . $row->photo . '" class="img-thumbnail" style="max-width:60px;">' : '';
                 })
                 ->addColumn('status', function($row) {
-                    return $row->status;
+                    $statusClass = $row->status === 'Active' ? 'success' : 'danger';
+                    $newStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
+                    return '<button class="btn btn-'.$statusClass.' btn-xs toggleStatus" data-id="'.$row->id.'" data-status="'.$newStatus.'">'.$row->status.'</button>';
                 })
                 ->addColumn('action', function($row) {
                     return '<button class="btn btn-primary btn-xs editBtn" data-id="'.$row->id.'"><i class="fas fa-edit"></i></button> '
@@ -74,11 +75,9 @@ class DoctorController extends Controller
         $data['doctor_id'] = Doctor::max('doctor_id') + 1;
         $data['status'] = 'Active';
         if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $filename = uniqid('doctor_').'.'.$file->getClientOriginalExtension();
-            $file->storeAs('public/doctor_photos', $filename);
-            $data['photo'] = $filename;
-            Log::info('Doctor photo uploaded', ['filename' => $filename]);
+            $path = $request->file('photo')->store('doctor_photos', 'public');
+            $data['photo'] = basename($path);
+            Log::info('Doctor photo uploaded', ['filename' => $data['photo']]);
         }
         $doctor = Doctor::create($data);
         return response()->json(['success' => true, 'message' => 'Doctor created successfully.']);
@@ -128,13 +127,11 @@ class DoctorController extends Controller
         ]);
         if ($request->hasFile('photo')) {
             if ($doctor->photo) {
-                Storage::delete('public/doctor_photos/'.$doctor->photo);
+                Storage::disk('public')->delete('doctor_photos/'.$doctor->photo);
             }
-            $file = $request->file('photo');
-            $filename = uniqid('doctor_').'.'.$file->getClientOriginalExtension();
-            $file->storeAs('public/doctor_photos', $filename);
-            $data['photo'] = $filename;
-            Log::info('Doctor photo uploaded', ['filename' => $filename]);
+            $path = $request->file('photo')->store('doctor_photos', 'public');
+            $data['photo'] = basename($path);
+            Log::info('Doctor photo uploaded', ['filename' => $data['photo']]);
         }
         $doctor->update($data);
         return response()->json(['success' => true, 'message' => 'Doctor updated successfully.']);
@@ -153,12 +150,32 @@ class DoctorController extends Controller
         return response()->json(['success' => true, 'message' => 'Doctor deleted successfully.']);
     }
 
-    // Status toggle
+    /**
+     * Toggle doctor status
+     */
     public function toggleStatus($id, Request $request)
     {
         $doctor = Doctor::findOrFail($id);
         $doctor->status = $request->status;
         $doctor->save();
-        return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
+        return response()->json(['success' => true, 'message' => 'Doctor status updated successfully.']);
+    }
+
+    /**
+     * Print doctor details
+     */
+    public function print($id)
+    {
+        $doctor = Doctor::findOrFail($id);
+        return view('doctor.print', compact('doctor'));
+    }
+
+    /**
+     * Generate doctor ID card
+     */
+    public function idCard($id)
+    {
+        $doctor = Doctor::findOrFail($id);
+        return view('doctor.id_card', compact('doctor'));
     }
 }

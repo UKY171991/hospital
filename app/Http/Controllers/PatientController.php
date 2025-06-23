@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class PatientController extends Controller
 {
@@ -19,19 +20,19 @@ class PatientController extends Controller
                 $query->where('reg_date', '<=', $request->to_date);
             }
             $patients = $query->get();
-            $data = $patients->map(function($item, $key) {
-                return [
-                    'sno' => $key + 1,
-                    'patient_name' => $item->patient_name ?? $item->name ?? '',
-                    'patient_id' => $item->patient_id ?? '',
-                    'relation_name' => $item->relation_name ?? '',
-                    'mobile' => $item->mobile ?? '',
-                    'reg_date' => $item->reg_date ?? '',
-                    'address' => $item->address ?? '',
-                    'action' => '<a href="#" class="editBtn text-primary" data-id="'.$item->id.'"><i class="fas fa-edit"></i></a>'
-                ];
-            });
-            return response()->json(['data' => $data]);
+            return DataTables::of($patients)
+                ->addIndexColumn()
+                ->addColumn('photo', function($item) {
+                    return $item->photo ? '<img src="/storage/patient_photos/' . $item->photo . '" class="img-thumbnail" style="max-width:60px;">' : '';
+                })
+                ->addColumn('status', function($item) {
+                    return '<span class="badge badge-success">Active</span>';
+                })
+                ->addColumn('action', function($item) {
+                    return '<a href="#" class="editBtn text-primary" data-id="'.$item->id.'"><i class="fas fa-edit"></i></a>';
+                })
+                ->rawColumns(['photo', 'status', 'action'])
+                ->make(true);
         }
         return view('reports.patient');
     }

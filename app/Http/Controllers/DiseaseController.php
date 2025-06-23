@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Disease;
 use App\Models\Department;
 use Illuminate\Http\Request;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class DiseaseController extends Controller
 {

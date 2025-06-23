@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Investigation;
 use App\Models\Department;
 use Illuminate\Http\Request;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class InvestigationController extends Controller
 {
@@ -19,9 +19,9 @@ class InvestigationController extends Controller
                     return $row->department ? $row->department->department : '';
                 })
                 ->addColumn('status', function($row){
-                    $icon = $row->status === 'Active' ? 'fa-eye text-success' : 'fa-eye-slash text-warning';
-                    $nextStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
-                    return '<a href="#" class="toggleStatus" data-id="'.$row->id.'" data-status="'.$nextStatus.'"><i class="fas '.$icon.'"></i></a>';
+                    $statusClass = $row->status === 'Active' ? 'success' : 'danger';
+                    $newStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
+                    return '<button class="btn btn-'.$statusClass.' btn-xs toggleStatus" data-id="'.$row->id.'" data-status="'.$newStatus.'">'.$row->status.'</button>';
                 })
                 ->addColumn('action', function($row){
                     return '<button class="btn btn-primary btn-xs editBtn" data-id="'.$row->id.'"><i class="fas fa-edit"></i></button> '
@@ -74,5 +74,13 @@ class InvestigationController extends Controller
         $investigation = Investigation::findOrFail($id);
         $investigation->delete();
         return response()->json(['success' => true, 'message' => 'Investigation deleted successfully.']);
+    }
+
+    public function toggleStatus($id, Request $request)
+    {
+        $investigation = Investigation::findOrFail($id);
+        $investigation->status = $request->status;
+        $investigation->save();
+        return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
     }
 }

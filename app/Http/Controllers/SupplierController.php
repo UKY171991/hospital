@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class SupplierController extends Controller
 {
@@ -14,10 +14,8 @@ class SupplierController extends Controller
         if ($request->ajax()) {
             $data = Supplier::query();
             return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('photo', function($row){
-                    $src = $row->photo ? asset('storage/supplier_photos/' . $row->photo) : 'https://via.placeholder.com/60x60?text=No+Image';
-                    return '<img src="'.$src.'" class="img-thumbnail" style="max-width:60px;">';
+                ->addIndexColumn()                ->addColumn('photo', function($row){
+                    return $row->photo ? '<img src="/storage/supplier_photos/' . $row->photo . '" class="img-thumbnail" style="max-width:60px;">' : '';
                 })
                 ->addColumn('status', function($row){
                     $checked = $row->status === 'Active' ? 'checked' : '';
@@ -51,12 +49,9 @@ class SupplierController extends Controller
             'opening_balance' => 'required|numeric',
             'photo' => 'nullable|image|max:2048',
         ]);
-        $data['status'] = 'Active';
-        if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $filename = uniqid('supplier_').'.'.$file->getClientOriginalExtension();
-            $file->storeAs('public/supplier_photos', $filename);
-            $data['photo'] = $filename;
+        $data['status'] = 'Active';        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('supplier_photos', 'public');
+            $data['photo'] = basename($path);
         }
         Supplier::create($data);
         return response()->json(['success' => true, 'message' => 'Supplier created successfully.']);
@@ -91,15 +86,12 @@ class SupplierController extends Controller
             'ifsc_code' => 'nullable|string|max:20',
             'opening_balance' => 'required|numeric',
             'photo' => 'nullable|image|max:2048',
-        ]);
-        if ($request->hasFile('photo')) {
+        ]);        if ($request->hasFile('photo')) {
             if ($supplier->photo) {
                 Storage::disk('public')->delete('supplier_photos/'.$supplier->photo);
             }
-            $file = $request->file('photo');
-            $filename = uniqid('supplier_').'.'.$file->getClientOriginalExtension();
-            $file->storeAs('public/supplier_photos', $filename);
-            $data['photo'] = $filename;
+            $path = $request->file('photo')->store('supplier_photos', 'public');
+            $data['photo'] = basename($path);
         }
         $supplier->update($data);
         return response()->json(['success' => true, 'message' => 'Supplier updated successfully.']);

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Room;
 use App\Models\Ward;
 use Illuminate\Http\Request;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class RoomController extends Controller
 {

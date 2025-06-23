@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class EmployeeController extends Controller
 {
@@ -16,14 +16,24 @@ class EmployeeController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('photo', function($row){
-                    return $row->photo;
+                    return $row->photo ? '<img src="/storage/employee_photos/' . $row->photo . '" class="img-thumbnail" style="max-width:60px;">' : '<span class="text-muted">No Photo</span>';
+                })
+                ->addColumn('status', function($row){
+                    $icon = $row->status === 'Active' ? 'fa-eye text-success' : 'fa-eye-slash text-warning';
+                    $nextStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
+                    return '<a href="#" class="toggleStatus" data-id="'.$row->id.'" data-status="'.$nextStatus.'"><i class="fas '.$icon.'"></i></a>';
                 })
                 ->addColumn('action', function($row){
-                    return '<button class="btn btn-info btn-xs viewBtn" data-id="'.$row->id.'"><i class="fas fa-eye"></i></button> '
-                        .'<button class="btn btn-primary btn-xs editBtn" data-id="'.$row->id.'"><i class="fas fa-edit"></i></button> '
-                        .'<button class="btn btn-danger btn-xs deleteBtn" data-id="'.$row->id.'"><i class="fas fa-trash"></i></button>';
+                    return '<div class="btn-group" role="group">'
+                        .'<button type="button" class="btn btn-sm btn-info editBtn" data-id="'.$row->id.'" title="Edit">'
+                        .'<i class="fas fa-edit"></i></button>'
+                        .'<button type="button" class="btn btn-sm btn-primary viewBtn" data-id="'.$row->id.'" title="View">'
+                        .'<i class="fas fa-eye"></i></button>'
+                        .'<button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="'.$row->id.'" title="Delete">'
+                        .'<i class="fas fa-trash"></i></button>'
+                        .'</div>';
                 })
-                ->rawColumns(['photo','action'])
+                ->rawColumns(['photo','status','action'])
                 ->make(true);
         }
         return view('employee.index');
@@ -132,5 +142,17 @@ class EmployeeController extends Controller
         }
         $employee->delete();
         return response()->json(['success' => true, 'message' => 'Employee deleted successfully.']);
+    }
+
+    public function toggleStatus($id, Request $request)
+    {
+        $employee = Employee::findOrFail($id);
+        $employee->status = $request->status;
+        $employee->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee status updated successfully.'
+        ]);
     }
 }

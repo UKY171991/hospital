@@ -1,46 +1,83 @@
 @extends('layouts.app')
+
+@section('content-header')
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1><i class="fas fa-door-open mr-2"></i>Ward Management</h1>
+            <p class="text-muted">Manage hospital wards and room allocations</p>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+                <li class="breadcrumb-item active">Wards</li>
+            </ol>
+        </div>
+    </div>
+</div>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-4">
-            <div class="card card-primary">
-                <div class="card-header"><h3 class="card-title" id="formTitle">Add Ward</h3></div>
+        <!-- Form Section -->
+        <div class="col-lg-4 col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0" id="formTitle">
+                        <i class="fas fa-plus mr-2"></i>Add Ward
+                    </h5>
+                </div>
                 <form id="wardForm">
                     @csrf
                     <input type="hidden" name="id" id="ward_id">
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="name">Ward Name</label>
-                            <input type="text" name="name" id="name" class="form-control" required>
+                            <label for="name"><i class="fas fa-door-open mr-1"></i>Ward Name</label>
+                            <input type="text" name="name" id="name" class="form-control" 
+                                   placeholder="Enter ward name" required>
                         </div>
                         <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control"></textarea>
+                            <label for="description"><i class="fas fa-align-left mr-1"></i>Description</label>
+                            <textarea name="description" id="description" class="form-control" rows="3" 
+                                      placeholder="Enter ward description..."></textarea>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
-                        <button type="button" class="btn btn-secondary" id="resetBtn">Reset</button>
+                        <button type="submit" class="btn btn-success" id="saveBtn">
+                            <i class="fas fa-save mr-1"></i>Save Ward
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" id="resetBtn">
+                            <i class="fas fa-undo mr-1"></i>Reset
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header"><h3 class="card-title">Ward List</h3></div>
+
+        <!-- Table Section -->
+        <div class="col-lg-8 col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list mr-2"></i>Ward Directory
+                    </h5>
+                </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-striped" id="wardTable" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover" id="wardTable" style="width:100%">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th><i class="fas fa-door-open mr-1"></i>Name</th>
+                                    <th><i class="fas fa-align-left mr-1"></i>Description</th>
+                                    <th><i class="fas fa-toggle-on mr-1"></i>Status</th>
+                                    <th><i class="fas fa-cogs mr-1"></i>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,20 +163,21 @@ $(function() {
                 }
             });
         }
-    });
-
-    // Status toggle
+    });    // Status toggle
     $('#wardTable').on('click', '.toggleStatus', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
         var status = $(this).data('status');
         $.ajax({
-            url: '/ward/' + id,
-            type: 'PUT',
+            url: '/ward/toggle-status/' + id,
+            type: 'POST',
             data: { status: status, _token: '{{ csrf_token() }}' },
             success: function(res) {
                 table.ajax.reload();
-                toastr.success(res.message);
+                toastr && toastr.success(res.message || 'Status updated successfully.');
+            },
+            error: function(xhr) {
+                toastr && toastr.error(xhr.responseJSON?.message || 'Status update failed.');
             }
         });
     });

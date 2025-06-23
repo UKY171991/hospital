@@ -1,39 +1,65 @@
 @extends('layouts.app')
 
+@section('content-header')
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1><i class="fas fa-receipt mr-2"></i>Receipt Management</h1>
+            <p class="text-muted">Manage patient receipts and billing records</p>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+                <li class="breadcrumb-item active">Receipts</li>
+            </ol>
+        </div>
+    </div>
+</div>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title mb-0">Create Quick Receipt:</h3>
+        <!-- Form Section -->
+        <div class="col-lg-4 col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-plus mr-2"></i>Create Quick Receipt
+                    </h5>
                 </div>
                 <div class="card-body">
                     @include('receipt.form')
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0">Manage Quick Receipt:</h3>
+
+        <!-- Table Section -->
+        <div class="col-lg-8 col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list mr-2"></i>Receipt Records
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered table-hover" id="receiptTable">
-                        <thead class="bg-primary text-white">
-                            <tr>
-                                <th>Sr No</th>
-                                <th>Date</th>
-                                <th>Patient Name</th>
-                                <th>Phone No</th>
-                                <th>Amount</th>
-                                <th>Check Number</th>
-                                <th>Remark</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped" id="receiptTable">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Sr No</th>
+                                    <th><i class="fas fa-calendar mr-1"></i>Date</th>
+                                    <th><i class="fas fa-user mr-1"></i>Patient Name</th>
+                                    <th><i class="fas fa-phone mr-1"></i>Phone No</th>
+                                    <th><i class="fas fa-rupee-sign mr-1"></i>Amount</th>
+                                    <th><i class="fas fa-check mr-1"></i>Check Number</th>
+                                    <th><i class="fas fa-comment mr-1"></i>Remark</th>
+                                    <th><i class="fas fa-cogs mr-1"></i>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

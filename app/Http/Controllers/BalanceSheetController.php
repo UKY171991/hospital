@@ -11,10 +11,16 @@ class BalanceSheetController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $balanceSheets = BalanceSheet::query();
-            return DataTables::of($balanceSheets)
+            $balanceSheets = BalanceSheet::query();            return DataTables::of($balanceSheets)
                 ->addColumn('action', function ($row) {
-                    return '<button class="btn btn-sm btn-primary editBtn" data-id="'.$row->id.'">Edit</button> <button class="btn btn-sm btn-danger deleteBtn" data-id="'.$row->id.'">Delete</button>';
+                    return '<div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-primary editBtn" data-id="'.$row->id.'" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger deleteBtn" data-id="'.$row->id.'" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
