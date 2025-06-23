@@ -7,11 +7,12 @@ use App\Models\BalanceSheet;
 use Yajra\DataTables\DataTables;
 
 class BalanceSheetController extends Controller
-{
-    public function index(Request $request)
+{    public function index(Request $request)
     {
         if ($request->ajax()) {
-            $balanceSheets = BalanceSheet::query();            return DataTables::of($balanceSheets)
+            $balanceSheets = BalanceSheet::query();
+              return DataTables::of($balanceSheets)
+                ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return '<div class="btn-group" role="group">
                                 <button class="btn btn-sm btn-primary editBtn" data-id="'.$row->id.'" title="Edit">

@@ -14,4 +14,10 @@ class Patient extends Model
     ];
     
     protected $dates = ['reg_date'];
+    
+    // Define relationship to OPD records
+    public function opds()
+    {
+        return $this->hasMany(Opd::class, 'patient_id', 'patient_id');
+    }
 } 

@@ -137,21 +137,20 @@
 
 @push('scripts')
 <script>
-$(function() {
-    // DataTable
+$(function() {    // DataTable
     var table = $('#balanceSheetTable').DataTable({
         processing: true,
         serverSide: true,
-        responsive: true,
-        ajax: {
+        responsive: true,        ajax: {
             url: '/reports/balance-sheet',
-            dataSrc: 'data'
+            type: 'GET'
         },
         columns: [
-            { data: 'report_type' },
-            { data: 'month_year' },
+            { data: 'report_type', name: 'report_type' },
+            { data: 'month_year', name: 'month_year' },
             { 
                 data: 'credit',
+                name: 'credit',
                 render: function(data) {
                     return '₹' + parseFloat(data || 0).toFixed(2);
                 },
@@ -159,6 +158,7 @@ $(function() {
             },
             { 
                 data: 'debit',
+                name: 'debit',
                 render: function(data) {
                     return '₹' + parseFloat(data || 0).toFixed(2);
                 },
@@ -166,6 +166,7 @@ $(function() {
             },
             { 
                 data: 'balance',
+                name: 'balance',
                 render: function(data) {
                     return '₹' + parseFloat(data || 0).toFixed(2);
                 },
@@ -173,6 +174,7 @@ $(function() {
             },
             { 
                 data: 'action', 
+                name: 'action',
                 orderable: false, 
                 searchable: false,
                 className: 'text-center'
@@ -299,9 +301,7 @@ $(function() {
             var balance = credit - debit;
             $('#balance').val(balance.toFixed(2));
         });
-    });
-
-    // Edit
+    });    // Edit
     $(document).on('click', '.editBtn', function() {
         var id = $(this).data('id');
         $.get('/balance-sheet/' + id + '/edit', function(data) {
