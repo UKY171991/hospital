@@ -142,8 +142,7 @@ $(function() {
     var table = $('#balanceSheetTable').DataTable({
         processing: true,
         serverSide: true,
-        responsive: true,
-        ajax: {
+        responsive: true,        ajax: {
             url: '/reports/balance-sheet',
             type: 'GET',
             error: function(xhr, error, thrown) {

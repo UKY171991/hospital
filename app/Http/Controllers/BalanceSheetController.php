@@ -9,11 +9,18 @@ use Yajra\DataTables\DataTables;
 class BalanceSheetController extends Controller
 {    public function index(Request $request)
     {
+        // Log for debugging
+        \Log::info('BalanceSheet index called', [
+            'is_ajax' => $request->ajax(),
+            'headers' => $request->headers->all(),
+            'request_method' => $request->method()
+        ]);
+        
         if ($request->ajax()) {
             try {
                 $balanceSheets = BalanceSheet::query();
                 
-                return DataTables::of($balanceSheets)
+                $result = DataTables::of($balanceSheets)
                     ->addIndexColumn()
                     ->addColumn('action', function ($row) {
                         return '<div class="btn-group" role="group">
@@ -27,7 +34,15 @@ class BalanceSheetController extends Controller
                     })
                     ->rawColumns(['action'])
                     ->make(true);
+                    
+                \Log::info('DataTables result generated', ['result_type' => get_class($result)]);
+                return $result;
+                
             } catch (\Exception $e) {
+                \Log::error('DataTables error', [
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 return response()->json([
                     'error' => true,
                     'message' => $e->getMessage(),

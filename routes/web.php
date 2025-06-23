@@ -181,4 +181,36 @@ Route::middleware('auth')->group(function () {
     })->name('patients.register');
 });
 
+// Test route for balance sheet DataTable
+Route::get('/balance-sheet/test', function(Request $request) {
+    if ($request->ajax()) {
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => 2,
+            'recordsFiltered' => 2,
+            'data' => [
+                [
+                    'id' => 1,
+                    'report_type' => 'Test Report 1',
+                    'month_year' => '2025-06',
+                    'credit' => '500.00',
+                    'debit' => '200.00',
+                    'balance' => '300.00',
+                    'action' => '<button class="btn btn-sm btn-primary">Edit</button>'
+                ],
+                [
+                    'id' => 2,
+                    'report_type' => 'Test Report 2',
+                    'month_year' => '2025-05',
+                    'credit' => '1000.00',
+                    'debit' => '49.00',
+                    'balance' => '951.00',
+                    'action' => '<button class="btn btn-sm btn-primary">Edit</button>'
+                ]
+            ]
+        ]);
+    }
+    return response()->json(['error' => 'Not an AJAX request']);
+});
+
 require __DIR__.'/auth.php';
