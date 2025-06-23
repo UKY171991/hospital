@@ -54,13 +54,14 @@
                 <table class="table table-striped table-hover" id="doctorTable" style="width:100%">
                     <thead class="table-primary">
                         <tr>
-                            <th>S.No</th>
+                            <th>S.No.</th>
                             <th>Photo</th>
                             <th>Name</th>
                             <th>Doctor ID</th>
                             <th>Mobile</th>
                             <th>Email</th>
-                            <th>Joining Date</th>
+                            <th>Qualification</th>
+                            <th>Experience</th>
                             <th>Address</th>
                             <th>Opening Balance</th>
                             <th>Status</th>
@@ -76,125 +77,203 @@
 <!-- Doctor Modal -->
 <div class="modal fade" id="doctorModal" tabindex="-1" role="dialog" aria-labelledby="doctorModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="doctorModalLabel">
-          <i class="fas fa-user-md me-2"></i>Add/Update Doctor
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form id="doctorForm" enctype="multipart/form-data">
-        @csrf
-        <input type="hidden" name="id" id="doctor_id">
+    <form id="doctorForm" enctype="multipart/form-data">
+      @csrf
+      <input type="hidden" name="id" id="doctorId">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="doctorModalLabel"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
         <div class="modal-body">
           <div class="row">
-            <!-- Column 1: Basic Information -->
-            <div class="col-md-4">
-              <h6 class="text-primary border-bottom pb-2 mb-3">
-                <i class="fas fa-user me-2"></i>Basic Information
-              </h6>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Full Name <span class="text-danger">*</span></label>
-                <input type="text" name="name" id="name" class="form-control" required>
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Contact No <span class="text-danger">*</span></label>
-                <input type="text" name="mobile" id="mobile" class="form-control" required>
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Email</label>
-                <input type="email" name="email" id="email" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Date of Birth</label>
-                <input type="date" name="dob" id="dob" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Joining Date</label>
-                <input type="date" name="joining_date" id="joining_date" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Gender <span class="text-danger">*</span></label>
-                <select name="gender" id="gender" class="form-control" required>
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+            <div class="form-group col-md-3">
+              <label>Doctor Name <span class="text-danger">*</span></label>
+              <input type="text" name="name" id="name" class="form-control" required>
             </div>
-            
-            <!-- Column 2: Professional Information -->
-            <div class="col-md-4">
-              <h6 class="text-primary border-bottom pb-2 mb-3">
-                <i class="fas fa-stethoscope me-2"></i>Professional Details
-              </h6>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Qualification</label>
-                <input type="text" name="qualification" id="qualification" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Experience</label>
-                <input type="text" name="experience" id="experience" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Address</label>
-                <textarea name="address" id="address" class="form-control" rows="2"></textarea>
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Aadhar No</label>
-                <input type="text" name="aadhar_no" id="aadhar_no" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Pan No</label>
-                <input type="text" name="pan_no" id="pan_no" class="form-control">
-              </div>
+            <div class="form-group col-md-3">
+              <label>Doctor ID <span class="text-danger">*</span></label>
+              <input type="text" name="doctor_id" id="doctor_id" class="form-control" required>
             </div>
-            
-            <!-- Column 3: Financial & Photo -->
-            <div class="col-md-4">
-              <h6 class="text-primary border-bottom pb-2 mb-3">
-                <i class="fas fa-university me-2"></i>Financial Details
-              </h6>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Account No</label>
-                <input type="text" name="account_no" id="account_no" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">IFSC Code</label>
-                <input type="text" name="ifsc_code" id="ifsc_code" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Bank Name</label>
-                <input type="text" name="bank_name" id="bank_name" class="form-control">
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Opening Balance <span class="text-danger">*</span></label>
-                <input type="number" name="opening_balance" id="opening_balance" class="form-control" required>
-              </div>
-              <div class="form-group mb-3">
-                <label class="fw-semibold">Doctor Photo</label>
-                <input type="file" name="photo" id="photo" class="form-control" accept="image/*">
-                <div class="mt-2">
-                  <img id="photo_preview" src="" alt="Photo Preview" class="img-thumbnail" style="max-width:120px; max-height:120px; display:none;">
-                </div>
-              </div>
+            <div class="form-group col-md-3">
+              <label>Mobile Number <span class="text-danger">*</span></label>
+              <input type="text" name="mobile" id="mobile" class="form-control" required>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Email</label>
+              <input type="email" name="email" id="email" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Date Of Birth</label>
+              <input type="date" name="dob" id="dob" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Gender <span class="text-danger">*</span></label>
+              <select name="gender" id="gender" class="form-control" required>
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Qualification <span class="text-danger">*</span></label>
+              <input type="text" name="qualification" id="qualification" class="form-control" required>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Experience (Years)</label>
+              <input type="text" name="experience" id="experience" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Joining Date</label>
+              <input type="date" name="joining_date" id="joining_date" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Address <span class="text-danger">*</span></label>
+              <input type="text" name="address" id="address" class="form-control" required>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Aadhar Number</label>
+              <input type="text" name="aadhar_no" id="aadhar_no" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Pan Number</label>
+              <input type="text" name="pan_no" id="pan_no" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Bank Name</label>
+              <input type="text" name="bank_name" id="bank_name" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Account Number</label>
+              <input type="text" name="account_no" id="account_no" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>IFSC Code</label>
+              <input type="text" name="ifsc_code" id="ifsc_code" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Opening Balance</label>
+              <input type="number" name="opening_balance" id="opening_balance" class="form-control">
+            </div>
+            <div class="form-group col-md-3">
+              <label>Status</label>
+              <select name="status" id="status" class="form-control">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Doctor Photo</label>
+              <input type="file" name="photo" class="form-control">
+              <img id="photoPreview" src="" style="max-height:40px; margin-top:5px;">
             </div>
           </div>
         </div>
-        <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">
-            <i class="fas fa-times me-2"></i>Close
-          </button>
-          <button type="button" class="btn btn-outline-warning" onclick="$('#doctorForm')[0].reset(); $('#photo_preview').hide();">
-            <i class="fas fa-undo me-2"></i>Reset
-          </button>
-          <button type="submit" class="btn btn-success">
-            <i class="fas fa-save me-2"></i>Save Doctor
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Modal -->
+<div class="modal fade" id="viewDoctorModal" tabindex="-1" role="dialog" aria-labelledby="viewDoctorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <form>
+      <input type="hidden" id="viewDoctorId">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewDoctorModalLabel">View Doctor</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
           </button>
         </div>
-      </form>
-    </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="form-group col-md-3">
+              <label>Doctor Name</label>
+              <input type="text" id="view_name" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Doctor ID</label>
+              <input type="text" id="view_doctor_id" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Mobile Number</label>
+              <input type="text" id="view_mobile" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Email</label>
+              <input type="text" id="view_email" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Date Of Birth</label>
+              <input type="text" id="view_dob" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Gender</label>
+              <input type="text" id="view_gender" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Qualification</label>
+              <input type="text" id="view_qualification" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Experience</label>
+              <input type="text" id="view_experience" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Joining Date</label>
+              <input type="text" id="view_joining_date" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Address</label>
+              <input type="text" id="view_address" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Aadhar Number</label>
+              <input type="text" id="view_aadhar_no" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Pan Number</label>
+              <input type="text" id="view_pan_no" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Bank Name</label>
+              <input type="text" id="view_bank_name" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Account Number</label>
+              <input type="text" id="view_account_no" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>IFSC Code</label>
+              <input type="text" id="view_ifsc_code" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Opening Balance</label>
+              <input type="text" id="view_opening_balance" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Status</label>
+              <input type="text" id="view_status" class="form-control" readonly>
+            </div>
+            <div class="form-group col-md-3">
+              <label>Doctor Photo</label>
+              <img id="view_photoPreview" src="" style="max-height:100px; margin-top:5px;">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 @endsection
@@ -225,84 +304,40 @@ $(function() {
     // Global AJAX error handler for session expiry
     $(document).ajaxError(function(event, xhr, settings, thrownError) {
         if (xhr.status === 419) {
-            alert('Your session has expired. The page will be refreshed to continue.');
-            location.reload();
+            toastr.error('Your session has expired. The page will be refreshed to continue.');
+            setTimeout(() => location.reload(), 2000);
         }
-    });
-
-    // DataTable
-    table = $('#doctorTable').DataTable({
+    });    table = $('#doctorTable').DataTable({
         processing: true,
         serverSide: true,
-        ajax: {
-            url: '/doctor',
-            type: 'GET',
-            data: function(d) {
-                d._cacheBust = Date.now(); // Prevent caching
-                return d;
-            }
-        },
+        ajax: '/doctor',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { 
                 data: 'photo', 
                 name: 'photo', 
-                orderable: false, 
-                searchable: false,
-                render: function(data) { 
-                    return data ? `<img src="/storage/doctor_photos/${data}" height="40" class="rounded">` : '<span class="text-muted">No Photo</span>';
-                }
+                orderable: false,
+                searchable: false
             },
             { data: 'name', name: 'name' },
             { data: 'doctor_id', name: 'doctor_id' },
             { data: 'mobile', name: 'mobile' },
             { data: 'email', name: 'email' },
-            { data: 'joining_date', name: 'joining_date' },
+            { data: 'qualification', name: 'qualification' },
+            { data: 'experience', name: 'experience' },
             { data: 'address', name: 'address' },
             { data: 'opening_balance', name: 'opening_balance' },
             { 
                 data: 'status', 
                 name: 'status', 
                 orderable: false, 
-                searchable: false,
-                render: function(data, type, row) {
-                    const isActive = row.is_active == 1;
-                    const statusClass = isActive ? 'success' : 'danger';
-                    const statusText = isActive ? 'Active' : 'Inactive';
-                    const toggleText = isActive ? 'Deactivate' : 'Activate';
-                    const toggleStatus = isActive ? 0 : 1;
-                    
-                    return `
-                        <div class="btn-group" role="group">
-                            <span class="badge badge-${statusClass}">${statusText}</span>
-                            <button type="button" class="btn btn-sm btn-outline-${statusClass} toggleStatus ms-1" 
-                                    data-id="${row.id}" data-status="${toggleStatus}" title="${toggleText}">
-                                <i class="fas fa-toggle-${isActive ? 'on' : 'off'}"></i>
-                            </button>
-                        </div>
-                    `;
-                }
+                searchable: false
             },
             { 
                 data: 'action', 
                 name: 'action', 
                 orderable: false, 
-                searchable: false,
-                render: function(data, type, row) {
-                    return `
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-info editBtn" data-id="${row.id}" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-primary viewBtn" data-id="${row.id}" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-danger deleteBtn" data-id="${row.id}" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                }
+                searchable: false
             }
         ],
         dom: 'Bfrtip',
@@ -334,38 +369,148 @@ $(function() {
             emptyTable: 'No doctors found',
             zeroRecords: 'No matching doctors found'
         }
-    });    
-    // Open modal for add
-    $('#addDoctorBtn').click(function() {
-        $('#doctorForm')[0].reset();
-        $('#doctor_id').val('');
-        $('#photo_preview').attr('src', '').hide();
-        $('#doctorModalLabel').text('Add Doctor');
-        $('#doctorModal').modal('show');
     });
 
-    // Photo preview
-    $('#photo').change(function() {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#photo_preview').attr('src', e.target.result).show();
+    // Add Doctor Button
+    $('#addDoctorBtn').click(function(){
+        $('#doctorForm')[0].reset();
+        $('#doctorId').val('');
+        $('#photoPreview').attr('src', '').hide();
+        $('#doctorModalLabel').text('Add Doctor');
+        $('#doctorModal').modal('show');
+        toastr.info('Adding new doctor');
+    });    // Edit Doctor
+    $(document).on('click', '.editBtn', function(){
+        let id = $(this).data('id');
+        toastr.info('Loading doctor data...');
+        $.get('/doctor/' + id)
+        .done(function(doctor){
+            $('#doctorId').val(doctor.id || '');
+            if(doctor.photo) {
+                $('#photoPreview').attr('src', '/storage/doctor_photos/' + doctor.photo).show();
+            } else {
+                $('#photoPreview').attr('src', '').hide();
             }
-            reader.readAsDataURL(this.files[0]);
-        } else {
-            $('#photo_preview').attr('src', '').hide();
+            $('#name').val(doctor.name || '');
+            $('#doctor_id').val(doctor.doctor_id || '');
+            $('#mobile').val(doctor.mobile || '');
+            $('#email').val(doctor.email || '');
+            $('#dob').val(doctor.dob || '');
+            $('#gender').val(doctor.gender || '');
+            $('#qualification').val(doctor.qualification || '');
+            $('#experience').val(doctor.experience || '');
+            $('#joining_date').val(doctor.joining_date || '');
+            $('#address').val(doctor.address || '');
+            $('#aadhar_no').val(doctor.aadhar_no || '');
+            $('#pan_no').val(doctor.pan_no || '');
+            $('#bank_name').val(doctor.bank_name || '');
+            $('#account_no').val(doctor.account_no || '');
+            $('#ifsc_code').val(doctor.ifsc_code || '');
+            $('#opening_balance').val(doctor.opening_balance || '');
+            $('#status').val(doctor.status || 'Active');
+            $('#doctorModalLabel').text('Edit Doctor');
+            $('#doctorModal').modal('show');
+            toastr.success('Doctor data loaded successfully!');
+        })
+        .fail(function(){
+            toastr.error('Failed to load doctor data. Please try again.');
+        });
+    });    // View Doctor
+    $(document).on('click', '.viewBtn', function(){
+        let id = $(this).data('id');
+        toastr.info('Loading doctor details...');
+        $.get('/doctor/' + id)
+        .done(function(doctor){
+            $('#viewDoctorId').val(doctor.id);
+            if(doctor.photo) {
+                $('#view_photoPreview').attr('src', '/storage/doctor_photos/' + doctor.photo).show();
+            } else {
+                $('#view_photoPreview').attr('src', '').hide();
+            }
+            $('#view_name').val(doctor.name);
+            $('#view_doctor_id').val(doctor.doctor_id);
+            $('#view_mobile').val(doctor.mobile);
+            $('#view_email').val(doctor.email);
+            $('#view_dob').val(doctor.dob);
+            $('#view_gender').val(doctor.gender);
+            $('#view_qualification').val(doctor.qualification);
+            $('#view_experience').val(doctor.experience);
+            $('#view_joining_date').val(doctor.joining_date);
+            $('#view_address').val(doctor.address);
+            $('#view_aadhar_no').val(doctor.aadhar_no);
+            $('#view_pan_no').val(doctor.pan_no);
+            $('#view_bank_name').val(doctor.bank_name);
+            $('#view_account_no').val(doctor.account_no);
+            $('#view_ifsc_code').val(doctor.ifsc_code);
+            $('#view_opening_balance').val(doctor.opening_balance);
+            $('#view_status').val(doctor.status);
+            $('#viewDoctorModal').modal('show');
+            toastr.success('Doctor details loaded successfully!');
+        })
+        .fail(function(){
+            toastr.error('Failed to load doctor data. Please try again.');
+        });
+    });
+
+    // Delete Doctor
+    $(document).on('click', '.deleteBtn', function(){
+        if(confirm('Are you sure you want to delete this doctor?')){
+            let id = $(this).data('id');
+            toastr.info('Deleting doctor...');            $.ajax({
+                url: '/doctor/' + id,
+                type: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                success: function(response){
+                    table.ajax.reload();
+                    toastr.success(response.message || 'Doctor deleted successfully!');
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseJSON?.message || 'Delete failed.');
+                }
+            });
         }
     });
 
-    // Submit form (add/update)
-    $('#doctorForm').submit(function(e) {
+    // Toggle Status
+    $('#doctorTable').on('click', '.toggleStatus', function(e) {
         e.preventDefault();
-        var formData = new FormData(this);
-        var id = $('#doctor_id').val();
-        var url = id ? '/doctor/' + id : '/doctor';
-        var type = 'POST';
+        let id = $(this).data('id');
+        let status = $(this).data('status');
+        let $this = $(this);
+        
+        toastr.info('Updating doctor status...');        $.ajax({
+            url: `/doctor/toggle-status/${id}`,
+            type: 'POST',
+            data: {
+                status: status,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                table.ajax.reload();
+                toastr.success(response.message || 'Doctor status updated successfully!');
+            },
+            error: function(xhr) {
+                console.error('Status toggle error:', xhr.status, xhr.responseText);
+                if (xhr.status === 419) {
+                    toastr.error('Your session has expired. The page will be refreshed to continue.');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    toastr.error(xhr.responseJSON?.message || 'Status update failed.');
+                }
+            }
+        });
+    });
+
+    // Form Submission
+    $('#doctorForm').submit(function(e){
+        e.preventDefault();
+        let id = $('#doctorId').val();
+        let url = id ? '/doctor/' + id : '/doctor';
+        let type = 'POST';
+        let formData = new FormData(this);
         if (id) formData.append('_method', 'PUT');
         
+        toastr.info('Saving doctor data...');
         $.ajax({
             url: url,
             type: type,
@@ -373,136 +518,48 @@ $(function() {
             processData: false,
             contentType: false,
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            success: function(response) {
+            success: function(response){
                 $('#doctorModal').modal('hide');
                 table.ajax.reload();
-                // Show success message
-                if(response.message) {
-                    alert('Success: ' + response.message);
-                } else {
-                    alert('Doctor saved successfully!');
-                }
+                toastr.success(response.message || 'Doctor saved successfully!');
             },
             error: function(xhr) {
-                let msg = 'Error: ';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    // Laravel validation errors
+                    let errorMessages = [];
                     for (const key in xhr.responseJSON.errors) {
-                        msg += `\n${xhr.responseJSON.errors[key].join(' ')}`;
+                        errorMessages.push(xhr.responseJSON.errors[key].join(' '));
                     }
-                } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                    msg += xhr.responseJSON.message;
+                    toastr.error(errorMessages.join('<br>'));
                 } else {
-                    msg += 'An error occurred.';
+                    toastr.error(xhr.responseJSON?.message || 'An error occurred.');
                 }
-                alert(msg);
             }
         });
     });
 
-    // Edit button
-    $(document).on('click', '.editBtn', function() {
-        var id = $(this).data('id');
-        $.get('/doctor/' + id)
-        .done(function(data) {
-            $('#doctorForm')[0].reset();
-            $('#doctor_id').val(data.id || '');
-            $('#name').val(data.name || '');
-            $('#mobile').val(data.mobile || '');
-            $('#email').val(data.email || '');
-            $('#dob').val(data.dob || '');
-            $('#joining_date').val(data.joining_date || '');
-            $('#gender').val(data.gender || '');
-            $('#qualification').val(data.qualification || '');
-            $('#experience').val(data.experience || '');
-            $('#address').val(data.address || '');
-            $('#aadhar_no').val(data.aadhar_no || '');
-            $('#pan_no').val(data.pan_no || '');
-            $('#account_no').val(data.account_no || '');
-            $('#ifsc_code').val(data.ifsc_code || '');
-            $('#bank_name').val(data.bank_name || '');
-            $('#opening_balance').val(data.opening_balance || '');
-            
-            if (data.photo) {
-                $('#photo_preview').attr('src', '/storage/doctor_photos/' + data.photo).show();
-            } else {
-                $('#photo_preview').attr('src', '').hide();
-            }
-            $('#doctorModalLabel').text('Update Doctor');
-            $('#doctorModal').modal('show');
-        })
-        .fail(function() {
-            alert('Failed to load doctor data. Please try again.');
-        });
+    // Reset Button
+    $(document).on('click', '#resetButton', function(){
+        $('#doctorForm')[0].reset();
+        $('#photoPreview').attr('src', '').hide();
+        $('#doctorId').val('');
+        toastr.info('Form reset successfully!');
     });
 
-    // Delete button
-    $(document).on('click', '.deleteBtn', function() {
-        if(confirm('Are you sure you want to delete this doctor?')) {
-            var id = $(this).data('id');
-            $.ajax({
-                url: '/doctor/' + id,
-                type: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                success: function(response) {
-                    table.ajax.reload();
-                    if(response.message) {
-                        alert('Success: ' + response.message);
-                    } else {
-                        alert('Doctor deleted successfully!');
-                    }
-                },
-                error: function(xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.message || 'Delete failed.'));
-                }
-            });
+    // Photo Preview
+    $(document).on('change', 'input[name="photo"]', function() {
+        let input = this;
+        let preview = $('#photoPreview');
+        
+        if (input.files && input.files[0]) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                preview.attr('src', e.target.result).show();
+                toastr.success('Photo uploaded successfully!');
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.attr('src', '').hide();
         }
-    });
-
-    // Status toggle
-    $(document).on('click', '.toggleStatus', function(e) {
-        e.preventDefault();
-        var id = $(this).data('id');
-        var status = $(this).data('status');
-        var button = $(this);
-        
-        // Disable button during request
-        button.prop('disabled', true);
-        
-        $.ajax({
-            url: '/doctor/toggle-status/' + id,
-            type: 'POST',
-            data: { 
-                status: status
-            },
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            success: function(response) {
-                table.ajax.reload();
-                if(response.message) {
-                    alert('Success: ' + response.message);
-                } else {
-                    alert('Doctor status updated successfully!');
-                }
-            },
-            error: function(xhr) {
-                console.error('Status toggle error:', xhr.status, xhr.responseText);
-                if (xhr.status === 419) {
-                    alert('Your session has expired. The page will be refreshed to continue.');
-                    location.reload();
-                } else {
-                    let msg = 'Error: ';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        msg += xhr.responseJSON.message;
-                    } else {
-                        msg += 'Status update failed.';
-                    }
-                    alert(msg);
-                }
-            },
-            complete: function() {
-                button.prop('disabled', false);
-            }
-        });
     });
 });
 </script>
