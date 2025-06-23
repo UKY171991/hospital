@@ -11,7 +11,8 @@ class BalanceSheetController extends Controller
     {
         if ($request->ajax()) {
             $balanceSheets = BalanceSheet::query();
-              return DataTables::of($balanceSheets)
+            
+            return DataTables::of($balanceSheets)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return '<div class="btn-group" role="group">

@@ -137,13 +137,19 @@
 
 @push('scripts')
 <script>
-$(function() {    // DataTable
+$(function() {
+    // DataTable
     var table = $('#balanceSheetTable').DataTable({
         processing: true,
         serverSide: true,
-        responsive: true,        ajax: {
+        responsive: true,
+        ajax: {
             url: '/reports/balance-sheet',
-            type: 'GET'
+            type: 'GET',
+            error: function(xhr, error, thrown) {
+                console.error('DataTable AJAX Error:', xhr.responseText);
+                toastr.error('Failed to load balance sheet data. Please check console for details.');
+            }
         },
         columns: [
             { data: 'report_type', name: 'report_type' },
