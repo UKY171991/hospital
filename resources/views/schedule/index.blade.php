@@ -91,13 +91,11 @@ $(function() {
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-    });
-
-    // Global AJAX error handler for session expiry
+    });    // Global AJAX error handler for session expiry
     $(document).ajaxError(function(event, xhr, settings, thrownError) {
         if (xhr.status === 419) {
-            alert('Your session has expired. The page will be refreshed to continue.');
-            location.reload();
+            toastr.error('Your session has expired. The page will be refreshed to continue.');
+            setTimeout(() => location.reload(), 2000);
         }
     });
 
@@ -189,9 +187,7 @@ $(function() {
         $('#start_time').val('');
         $('#end_time').val('');
         loadDoctors();
-    }
-
-    // Submit form (add/update)
+    }    // Submit form (add/update)
     $('#scheduleForm').submit(function(e) {
         e.preventDefault();
         var id = $('#schedule_id').val();
@@ -200,6 +196,7 @@ $(function() {
         var formData = $(this).serializeArray();
         if (id) formData.push({name: '_method', value: 'PUT'});
         
+        toastr.info('Saving schedule...');
         $.ajax({
             url: url,
             type: type,
@@ -208,33 +205,24 @@ $(function() {
             success: function(response) {
                 resetForm();
                 table.ajax.reload();
-                // Show success message
-                if(response.message) {
-                    alert('Success: ' + response.message);
-                } else {
-                    alert('Schedule saved successfully!');
-                }
+                toastr.success(response.message || 'Schedule saved successfully!');
             },
             error: function(xhr) {
-                let msg = 'Error: ';
                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    // Laravel validation errors
+                    let errorMessages = [];
                     for (const key in xhr.responseJSON.errors) {
-                        msg += `\n${xhr.responseJSON.errors[key].join(' ')}`;
+                        errorMessages.push(xhr.responseJSON.errors[key].join(' '));
                     }
-                } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                    msg += xhr.responseJSON.message;
+                    toastr.error(errorMessages.join('<br>'));
                 } else {
-                    msg += 'An error occurred.';
+                    toastr.error(xhr.responseJSON?.message || 'An error occurred.');
                 }
-                alert(msg);
             }
         });
-    });
-
-    // Edit button
+    });    // Edit button
     $(document).on('click', '.editBtn', function() {
         var id = $(this).data('id');
+        toastr.info('Loading schedule data...');
         $.get('/schedule/' + id)
         .done(function(data) {
             $('#schedule_id').val(data.id || '');
@@ -242,36 +230,38 @@ $(function() {
             $('#available_days').val(data.available_days ? data.available_days.split(',') : []).trigger('change');
             $('#start_time').val(data.start_time || '');
             $('#end_time').val(data.end_time || '');
+            toastr.success('Schedule data loaded successfully!');
         })
         .fail(function() {
-            alert('Failed to load schedule data. Please try again.');
+            toastr.error('Failed to load schedule data. Please try again.');
+        });
+    });    // Delete button
+    $(document).on('click', '.deleteBtn', function() {
+        toastr.warning('Are you sure you want to delete this schedule?<br><br><button type="button" class="btn btn-sm btn-light" onclick="toastr.clear()">Cancel</button>&nbsp;<button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(' + $(this).data('id') + ')">Delete</button>', 'Confirm Delete', {
+            allowHtml: true,
+            closeButton: false,
+            timeOut: 0,
+            extendedTimeOut: 0
         });
     });
 
-    // Delete button
-    $(document).on('click', '.deleteBtn', function() {
-        if(confirm('Are you sure you want to delete this schedule?')) {
-            var id = $(this).data('id');
-            $.ajax({
-                url: '/schedule/' + id,
-                type: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                success: function(response) {
-                    table.ajax.reload();
-                    if(response.message) {
-                        alert('Success: ' + response.message);
-                    } else {
-                        alert('Schedule deleted successfully!');
-                    }
-                },
-                error: function(xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.message || 'Delete failed.'));
-                }
-            });
-        }
-    });
-
-    // Status toggle
+    // Confirm delete function
+    function confirmDelete(id) {
+        toastr.clear();
+        toastr.info('Deleting schedule...');
+        $.ajax({
+            url: '/schedule/' + id,
+            type: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
+                table.ajax.reload();
+                toastr.success(response.message || 'Schedule deleted successfully!');
+            },
+            error: function(xhr) {
+                toastr.error(xhr.responseJSON?.message || 'Delete failed.');
+            }
+        });
+    }    // Status toggle
     $(document).on('click', '.toggleStatus', function(e) {
         e.preventDefault();
         var id = $(this).data('id');
@@ -280,6 +270,8 @@ $(function() {
         
         // Disable button during request
         button.prop('disabled', true);
+        
+        toastr.info('Updating schedule status...');
         
         $.ajax({
             url: '/schedule/toggle-status/' + id,
@@ -290,25 +282,15 @@ $(function() {
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             success: function(response) {
                 table.ajax.reload();
-                if(response.message) {
-                    alert('Success: ' + response.message);
-                } else {
-                    alert('Schedule status updated successfully!');
-                }
+                toastr.success(response.message || 'Schedule status updated successfully!');
             },
             error: function(xhr) {
                 console.error('Status toggle error:', xhr.status, xhr.responseText);
                 if (xhr.status === 419) {
-                    alert('Your session has expired. The page will be refreshed to continue.');
-                    location.reload();
+                    toastr.error('Your session has expired. The page will be refreshed to continue.');
+                    setTimeout(() => location.reload(), 2000);
                 } else {
-                    let msg = 'Error: ';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        msg += xhr.responseJSON.message;
-                    } else {
-                        msg += 'Status update failed.';
-                    }
-                    alert(msg);
+                    toastr.error(xhr.responseJSON?.message || 'Status update failed.');
                 }
             },
             complete: function() {

@@ -450,26 +450,33 @@ $(function() {
         .fail(function(){
             toastr.error('Failed to load doctor data. Please try again.');
         });
+    });    // Delete Doctor
+    $(document).on('click', '.deleteBtn', function(){
+        toastr.warning('Are you sure you want to delete this doctor?<br><br><button type="button" class="btn btn-sm btn-light" onclick="toastr.clear()">Cancel</button>&nbsp;<button type="button" class="btn btn-sm btn-danger" onclick="confirmDeleteDoctor(' + $(this).data('id') + ')">Delete</button>', 'Confirm Delete', {
+            allowHtml: true,
+            closeButton: false,
+            timeOut: 0,
+            extendedTimeOut: 0
+        });
     });
 
-    // Delete Doctor
-    $(document).on('click', '.deleteBtn', function(){
-        if(confirm('Are you sure you want to delete this doctor?')){
-            let id = $(this).data('id');
-            toastr.info('Deleting doctor...');            $.ajax({
-                url: '/doctor/' + id,
-                type: 'DELETE',
-                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-                success: function(response){
-                    table.ajax.reload();
-                    toastr.success(response.message || 'Doctor deleted successfully!');
-                },
-                error: function(xhr) {
-                    toastr.error(xhr.responseJSON?.message || 'Delete failed.');
-                }
-            });
-        }
-    });
+    // Confirm delete doctor function
+    function confirmDeleteDoctor(id) {
+        toastr.clear();
+        toastr.info('Deleting doctor...');
+        $.ajax({
+            url: '/doctor/' + id,
+            type: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response){
+                table.ajax.reload();
+                toastr.success(response.message || 'Doctor deleted successfully!');
+            },
+            error: function(xhr) {
+                toastr.error(xhr.responseJSON?.message || 'Delete failed.');
+            }
+        });
+    }
 
     // Toggle Status
     $('#doctorTable').on('click', '.toggleStatus', function(e) {
