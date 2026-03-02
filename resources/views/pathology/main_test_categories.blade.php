@@ -6,34 +6,13 @@
 
 @section('content')
 <div class="row">
-    <div class="col-md-4">
-        <div class="card card-primary">
-            <div class="card-header"><b>Create Main Test Category</b></div>
-            <div class="card-body">
-                <form id="mainCategoryForm">
-                    <input type="hidden" id="main_category_id" name="main_category_id">
-
-                    <div class="form-group">
-                        <label for="name">Main Category Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter Main Category Name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter description"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
-                    <button type="button" id="resetFormBtn" class="btn btn-secondary">Reset</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-8">
+    <div class="col-md-12">
         <div class="card card-primary">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <b>Manage Main Test Categories</b>
+                <button type="button" class="btn btn-success btn-sm" id="openMainCategoryModalBtn">
+                    <i class="fas fa-plus"></i> Add Main Test Category
+                </button>
             </div>
             <div class="card-body">
                 <table id="mainCategoryTable" class="table table-bordered table-striped">
@@ -47,6 +26,38 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mainCategoryModal" tabindex="-1" role="dialog" aria-labelledby="mainCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="mainCategoryModalLabel">Create Main Test Category</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="mainCategoryForm">
+                    <input type="hidden" id="main_category_id" name="main_category_id">
+
+                    <div class="form-group">
+                        <label for="name">Main Category Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter Main Category Name" required>
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="resetFormBtn" class="btn btn-secondary">Reset</button>
+                <button type="submit" form="mainCategoryForm" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
             </div>
         </div>
     </div>
@@ -87,7 +98,13 @@ $(function() {
     function resetForm() {
         $('#mainCategoryForm')[0].reset();
         $('#main_category_id').val('');
+        $('#mainCategoryModalLabel').text('Create Main Test Category');
     }
+
+    $('#openMainCategoryModalBtn').on('click', function() {
+        resetForm();
+        $('#mainCategoryModal').modal('show');
+    });
 
     $('#resetFormBtn').on('click', resetForm);
 
@@ -107,6 +124,7 @@ $(function() {
                 toastr.success('Saved successfully');
                 table.ajax.reload();
                 resetForm();
+                $('#mainCategoryModal').modal('hide');
             },
             error: function(xhr) {
                 const message = xhr.responseJSON?.message || 'Error occurred';
@@ -119,6 +137,8 @@ $(function() {
         $('#main_category_id').val($(this).data('id'));
         $('#name').val($(this).data('name'));
         $('#description').val($(this).data('description'));
+        $('#mainCategoryModalLabel').text('Edit Main Test Category');
+        $('#mainCategoryModal').modal('show');
     });
 
     $('#mainCategoryTable').on('click', '.deleteBtn', function() {
