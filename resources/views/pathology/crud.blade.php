@@ -19,6 +19,12 @@
                     <thead class="bg-danger text-white">
                         <tr>
                             <th>S.No.</th>
+                            @if (in_array($section, ['test-categories', 'tests']))
+                                <th>Main Category</th>
+                            @endif
+                            @if ($section === 'tests')
+                                <th>Test Category</th>
+                            @endif
                             <th>Name</th>
                             <th>Description</th>
                             <th>Action</th>
@@ -90,6 +96,31 @@ $(function() {
     const needsMainCategory = ['test-categories', 'tests'].includes(section);
     const needsTestCategory = section === 'tests';
 
+    const columns = [{ data: null, render: (data, type, row, meta) => meta.row + 1 }];
+
+    if (needsMainCategory) {
+        columns.push({ data: 'main_test_category_name', defaultContent: '-' });
+    }
+
+    if (needsTestCategory) {
+        columns.push({ data: 'test_category_name', defaultContent: '-' });
+    }
+
+    columns.push(
+        { data: 'name' },
+        { data: 'description', defaultContent: '-' },
+        {
+            data: null,
+            orderable: false,
+            searchable: false,
+            render: function(data, type, row) {
+                const safeDescription = (row.description ?? '').replace(/"/g, '&quot;');
+                return `<button class="btn btn-info btn-sm editBtn" data-id="${row.id}" data-name="${row.name}" data-description="${safeDescription}" data-main-test-category-id="${row.main_test_category_id ?? ''}" data-test-category-id="${row.test_category_id ?? ''}"><i class="fa fa-edit"></i></button> ` +
+                    `<button class="btn btn-danger btn-sm deleteBtn" data-id="${row.id}"><i class="fa fa-trash"></i></button>`;
+            }
+        }
+    );
+
     const table = $('#pathologyCrudTable').DataTable({
         processing: true,
         serverSide: false,
@@ -97,21 +128,7 @@ $(function() {
             url: `/pathology/${section}/data`,
             dataSrc: 'data'
         },
-        columns: [
-            { data: null, render: (data, type, row, meta) => meta.row + 1 },
-            { data: 'name' },
-            { data: 'description', defaultContent: '-' },
-            {
-                data: null,
-                orderable: false,
-                searchable: false,
-                render: function(data, type, row) {
-                    const safeDescription = (row.description ?? '').replace(/"/g, '&quot;');
-                    return `<button class="btn btn-info btn-sm editBtn" data-id="${row.id}" data-name="${row.name}" data-description="${safeDescription}" data-main-test-category-id="${row.main_test_category_id ?? ''}" data-test-category-id="${row.test_category_id ?? ''}"><i class="fa fa-edit"></i></button> ` +
-                        `<button class="btn btn-danger btn-sm deleteBtn" data-id="${row.id}"><i class="fa fa-trash"></i></button>`;
-                }
-            }
-        ],
+        columns: columns,
         dom: 'Bfrtip',
         buttons: ['excel', 'pdf', 'print', 'colvis']
     });
