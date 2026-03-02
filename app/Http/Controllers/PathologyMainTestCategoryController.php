@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PathologyMainTestCategory;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,9 +16,20 @@ class PathologyMainTestCategoryController extends Controller
 
     public function data(): JsonResponse
     {
-        $categories = PathologyMainTestCategory::select('id', 'name', 'description')
-            ->latest('id')
-            ->get();
+        try {
+            $categories = PathologyMainTestCategory::select('id', 'name', 'description')
+                ->latest('id')
+                ->get();
+        } catch (QueryException $exception) {
+            if ($this->isMissingTableException($exception)) {
+                return response()->json([
+                    'data' => [],
+                    'warning' => 'Pathology main test category table is missing. Run migrations to enable this module.',
+                ]);
+            }
+
+            throw $exception;
+        }
 
         return response()->json(['data' => $categories]);
     }
@@ -29,7 +41,18 @@ class PathologyMainTestCategoryController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
-        PathologyMainTestCategory::create($validated);
+        try {
+            PathologyMainTestCategory::create($validated);
+        } catch (QueryException $exception) {
+            if ($this->isMissingTableException($exception)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Main test categories are not available yet. Please run migrations first.',
+                ], 503);
+            }
+
+            throw $exception;
+        }
 
         return response()->json([
             'success' => true,
@@ -44,8 +67,19 @@ class PathologyMainTestCategoryController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
-        $category = PathologyMainTestCategory::findOrFail($id);
-        $category->update($validated);
+        try {
+            $category = PathologyMainTestCategory::findOrFail($id);
+            $category->update($validated);
+        } catch (QueryException $exception) {
+            if ($this->isMissingTableException($exception)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Main test categories are not available yet. Please run migrations first.',
+                ], 503);
+            }
+
+            throw $exception;
+        }
 
         return response()->json([
             'success' => true,
@@ -55,12 +89,28 @@ class PathologyMainTestCategoryController extends Controller
 
     public function destroy(int $id): JsonResponse
     {
-        $category = PathologyMainTestCategory::findOrFail($id);
-        $category->delete();
+        try {
+            $category = PathologyMainTestCategory::findOrFail($id);
+            $category->delete();
+        } catch (QueryException $exception) {
+            if ($this->isMissingTableException($exception)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Main test categories are not available yet. Please run migrations first.',
+                ], 503);
+            }
+
+            throw $exception;
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Main test category deleted successfully.',
         ]);
+    }
+
+    private function isMissingTableException(QueryException $exception): bool
+    {
+        return (int) ($exception->errorInfo[1] ?? 0) === 1146;
     }
 }
