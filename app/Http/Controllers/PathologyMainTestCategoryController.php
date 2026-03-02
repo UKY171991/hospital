@@ -8,17 +8,18 @@ use Illuminate\Http\Request;
 
 class PathologyMainTestCategoryController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        if ($request->ajax()) {
-            $categories = PathologyMainTestCategory::select('id', 'name', 'description')
-                ->latest('id')
-                ->get();
-
-            return response()->json(['data' => $categories]);
-        }
-
         return view('pathology.main_test_categories');
+    }
+
+    public function data(): JsonResponse
+    {
+        $categories = PathologyMainTestCategory::select('id', 'name', 'description')
+            ->latest('id')
+            ->get();
+
+        return response()->json(['data' => $categories]);
     }
 
     public function store(Request $request): JsonResponse

@@ -62,7 +62,7 @@ $(function() {
         processing: true,
         serverSide: false,
         ajax: {
-            url: '{{ route('pathology.main-test-categories.index') }}',
+            url: '{{ route('pathology.main-test-categories.data') }}',
             dataSrc: 'data'
         },
         columns: [
