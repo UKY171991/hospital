@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # If mod_rewrite is disabled on the server, this file will be ignored.
+    # Keep a root index.php fallback (added in repo root) for shared-hosting compatibility.
+
     # If someone visits /public directly, redirect to the clean URL.
     RewriteCond %{THE_REQUEST} \s/+public/([^\s?]*) [NC]
     RewriteRule ^public/(.*)$ /$1 [R=301,L]
