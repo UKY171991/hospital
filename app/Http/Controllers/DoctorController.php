@@ -9,13 +9,20 @@ use Illuminate\Support\Facades\Log;
 
 class DoctorController extends Controller
 {
+    private function isPathologyScope(Request $request): bool
+    {
+        return $request->routeIs('pathology.doctor.*') || $request->is('pathology/doctor*');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        $isPathology = $this->isPathologyScope($request);
+
         if ($request->ajax()) {
-            $doctors = Doctor::query();
+            $doctors = Doctor::query()->where('is_pathology', $isPathology);
             return datatables()->of($doctors)
                 ->addIndexColumn()
                 ->addColumn('photo', function($row) {
@@ -26,16 +33,26 @@ class DoctorController extends Controller
                     $newStatus = $row->status === 'Active' ? 'Inactive' : 'Active';
                     return '<button class="btn btn-'.$statusClass.' btn-xs toggleStatus" data-id="'.$row->id.'" data-status="'.$newStatus.'">'.$row->status.'</button>';
                 })
-                ->addColumn('action', function($row) {
+                ->addColumn('action', function($row) use ($isPathology) {
+                    $basePath = $isPathology ? '/pathology/doctor' : '/doctor';
+
                     return '<button class="btn btn-primary btn-xs editBtn" data-id="'.$row->id.'"><i class="fas fa-edit"></i></button> '
                         .'<button class="btn btn-danger btn-xs deleteBtn" data-id="'.$row->id.'"><i class="fas fa-trash"></i></button> '
-                        .'<a href="/doctor/print/'.$row->id.'" class="btn btn-info btn-xs printBtn" target="_blank"><i class="fas fa-print"></i></a> '
-                        .'<a href="/doctor/id_card/'.$row->id.'" class="btn btn-success btn-xs idCardBtn" target="_blank"><i class="fas fa-id-card"></i></a>';
+                        .'<a href="'.$basePath.'/print/'.$row->id.'" class="btn btn-info btn-xs printBtn" target="_blank"><i class="fas fa-print"></i></a> '
+                        .'<a href="'.$basePath.'/id_card/'.$row->id.'" class="btn btn-success btn-xs idCardBtn" target="_blank"><i class="fas fa-id-card"></i></a>';
                 })
                 ->rawColumns(['photo','status','action'])
                 ->make(true);
         }
-        return view('doctor.index');
+        return view('doctor.index', [
+            'isPathologyDoctorPage' => $isPathology,
+            'doctorBaseUrl' => $isPathology ? '/pathology/doctor' : '/doctor',
+            'doctorPageTitle' => $isPathology ? 'Pathology Doctor Management' : 'Doctor Management',
+            'doctorPageDescription' => $isPathology ? 'Manage pathology doctors and specialists' : 'Manage hospital doctors and medical staff',
+            'doctorDirectoryTitle' => $isPathology ? 'Pathology Doctor Directory' : 'Doctor Directory',
+            'doctorRecordsTitle' => $isPathology ? 'Pathology Doctor Records' : 'Doctor Records',
+            'doctorBreadcrumb' => $isPathology ? 'Pathology Doctors' : 'Doctors',
+        ]);
     }
 
     /**
@@ -51,6 +68,7 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
+        $isPathology = $this->isPathologyScope($request);
         Log::info('Doctor store request received', ['hasFile' => $request->hasFile('photo'), 'all' => $request->all()]);
         // Photo is required for new doctor
         $data = $request->validate([
@@ -74,6 +92,7 @@ class DoctorController extends Controller
         Log::info('Doctor store request validated', $data);
         $data['doctor_id'] = Doctor::max('doctor_id') + 1;
         $data['status'] = 'Active';
+        $data['is_pathology'] = $isPathology;
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('doctor_photos', 'public');
             $data['photo'] = basename($path);
@@ -86,9 +105,9 @@ class DoctorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $doctor = Doctor::findOrFail($id);
+        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
         return response()->json($doctor);
     }
 
@@ -105,7 +124,7 @@ class DoctorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $doctor = Doctor::findOrFail($id);
+        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
         // Photo is optional for update
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -140,9 +159,9 @@ class DoctorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $doctor = Doctor::findOrFail($id);
+        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
         if ($doctor->photo) {
             Storage::delete('public/doctor_photos/'.$doctor->photo);
         }
@@ -155,7 +174,7 @@ class DoctorController extends Controller
      */
     public function toggleStatus($id, Request $request)
     {
-        $doctor = Doctor::findOrFail($id);
+        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
         $doctor->status = $request->status;
         $doctor->save();
         return response()->json(['success' => true, 'message' => 'Doctor status updated successfully.']);
@@ -164,18 +183,18 @@ class DoctorController extends Controller
     /**
      * Print doctor details
      */
-    public function print($id)
+    public function print(Request $request, $id)
     {
-        $doctor = Doctor::findOrFail($id);
+        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
         return view('doctor.print', compact('doctor'));
     }
 
     /**
      * Generate doctor ID card
      */
-    public function idCard($id)
+    public function idCard(Request $request, $id)
     {
-        $doctor = Doctor::findOrFail($id);
+        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
         return view('doctor.id_card', compact('doctor'));
     }
 }

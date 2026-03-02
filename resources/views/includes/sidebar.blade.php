@@ -17,7 +17,7 @@
                 $accountsActive = request()->routeIs('payment.*') || request()->routeIs('receipt.*') || request()->routeIs('quick-receipt');
                 $reportsActive = request()->is('reports/*');
                 $pathologyActive = request()->routeIs('pathology.dashboard')
-                    || request()->routeIs('doctor.*')
+                    || request()->routeIs('pathology.doctor.*')
                     || request()->routeIs('patients.*')
                     || request()->is('pathology/*');
             @endphp
@@ -45,7 +45,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('doctor.index') }}" class="nav-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
+                            <a href="{{ route('pathology.doctor.index') }}" class="nav-link {{ request()->routeIs('pathology.doctor.*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Doctors</p>
                             </a>
