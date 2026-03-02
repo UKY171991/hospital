@@ -166,6 +166,18 @@ Route::middleware('auth')->group(function () {
     Route::post('income_expense/store', [App\Http\Controllers\IncomeExpenseController::class, 'store']);
     Route::post('income_expense/update/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'update']);
     Route::delete('income_expense/delete/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'destroy']);
+    Route::prefix('pathology')->name('pathology.')->group(function () {
+        Route::view('/main-test-categories', 'pathology.page', ['title' => 'Main Test Categories'])->name('main-test-categories');
+        Route::view('/test-categories', 'pathology.page', ['title' => 'Test Categories'])->name('test-categories');
+        Route::view('/tests', 'pathology.page', ['title' => 'Tests'])->name('tests');
+        Route::view('/entries', 'pathology.page', ['title' => 'Entries'])->name('entries');
+        Route::view('/reports', 'pathology.page', ['title' => 'Reports'])->name('reports');
+        Route::view('/menu-plan', 'pathology.page', ['title' => 'Menu Plan'])->name('menu-plan');
+        Route::view('/notices', 'pathology.page', ['title' => 'Notices'])->name('notices');
+        Route::view('/uploads', 'pathology.page', ['title' => 'Uploads'])->name('uploads');
+        Route::view('/owners', 'pathology.page', ['title' => 'Owners'])->name('owners');
+    });
+
     Route::resource('payment', PaymentController::class);
     Route::resource('receipt', ReceiptController::class);
     Route::get('/quick-receipt', [App\Http\Controllers\ReceiptController::class, 'index'])->name('quick-receipt');
