@@ -13,6 +13,24 @@
                 <form id="pathologyCrudForm">
                     <input type="hidden" id="record_id" name="record_id">
 
+                    @if (in_array($section, ['test-categories', 'tests']))
+                        <div class="form-group">
+                            <label for="main_test_category_id">Main Test Category <span class="text-danger">*</span></label>
+                            <select class="form-control" id="main_test_category_id" name="main_test_category_id" required>
+                                <option value="">Select main test category</option>
+                            </select>
+                        </div>
+                    @endif
+
+                    @if ($section === 'tests')
+                        <div class="form-group">
+                            <label for="test_category_id">Test Category <span class="text-danger">*</span></label>
+                            <select class="form-control" id="test_category_id" name="test_category_id" required>
+                                <option value="">Select test category</option>
+                            </select>
+                        </div>
+                    @endif
+
                     <div class="form-group">
                         <label for="name">Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
@@ -58,6 +76,8 @@
 $(function() {
     const section = @json($section);
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    const needsMainCategory = ['test-categories', 'tests'].includes(section);
+    const needsTestCategory = section === 'tests';
 
     const table = $('#pathologyCrudTable').DataTable({
         processing: true,
@@ -76,7 +96,7 @@ $(function() {
                 searchable: false,
                 render: function(data, type, row) {
                     const safeDescription = (row.description ?? '').replace(/"/g, '&quot;');
-                    return `<button class="btn btn-info btn-sm editBtn" data-id="${row.id}" data-name="${row.name}" data-description="${safeDescription}"><i class="fa fa-edit"></i></button> ` +
+                    return `<button class="btn btn-info btn-sm editBtn" data-id="${row.id}" data-name="${row.name}" data-description="${safeDescription}" data-main-test-category-id="${row.main_test_category_id ?? ''}" data-test-category-id="${row.test_category_id ?? ''}"><i class="fa fa-edit"></i></button> ` +
                         `<button class="btn btn-danger btn-sm deleteBtn" data-id="${row.id}"><i class="fa fa-trash"></i></button>`;
                 }
             }
@@ -88,6 +108,59 @@ $(function() {
     function resetForm() {
         $('#pathologyCrudForm')[0].reset();
         $('#record_id').val('');
+
+        if (needsTestCategory) {
+            $('#test_category_id').html('<option value="">Select test category</option>');
+        }
+    }
+
+    function loadMainCategories(selectedId = '') {
+        if (!needsMainCategory) {
+            return;
+        }
+
+        $.get('/pathology/main-test-categories/data', function(response) {
+            const options = (response.data || [])
+                .map(category => `<option value="${category.id}">${category.name}</option>`)
+                .join('');
+
+            $('#main_test_category_id').html('<option value="">Select main test category</option>' + options);
+            if (selectedId) {
+                $('#main_test_category_id').val(String(selectedId));
+            }
+        });
+    }
+
+    function loadTestCategories(mainCategoryId, selectedId = '') {
+        if (!needsTestCategory) {
+            return;
+        }
+
+        if (!mainCategoryId) {
+            $('#test_category_id').html('<option value="">Select test category</option>');
+            return;
+        }
+
+        $.get('/pathology/test-categories/data', { main_test_category_id: mainCategoryId }, function(response) {
+            const options = (response.data || [])
+                .map(category => `<option value="${category.id}">${category.name}</option>`)
+                .join('');
+
+            $('#test_category_id').html('<option value="">Select test category</option>' + options);
+            if (selectedId) {
+                $('#test_category_id').val(String(selectedId));
+            }
+        });
+    }
+
+    if (needsMainCategory) {
+        loadMainCategories();
+    }
+
+    if (needsTestCategory) {
+        $('#main_test_category_id').on('change', function() {
+            loadTestCategories($(this).val());
+        });
     }
 
     $('#resetFormBtn').on('click', resetForm);
@@ -120,6 +193,17 @@ $(function() {
         $('#record_id').val($(this).data('id'));
         $('#name').val($(this).data('name'));
         $('#description').val($(this).data('description'));
+
+        const mainCategoryId = $(this).data('main-test-category-id');
+        const testCategoryId = $(this).data('test-category-id');
+
+        if (needsMainCategory) {
+            loadMainCategories(mainCategoryId);
+        }
+
+        if (needsTestCategory) {
+            loadTestCategories(mainCategoryId, testCategoryId);
+        }
     });
 
     $('#pathologyCrudTable').on('click', '.deleteBtn', function() {
