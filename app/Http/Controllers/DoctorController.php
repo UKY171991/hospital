@@ -6,9 +6,32 @@ use Illuminate\Http\Request;
 use App\Models\Doctor;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class DoctorController extends Controller
 {
+    private function hasPathologyColumn(): bool
+    {
+        static $hasPathologyColumn;
+
+        if ($hasPathologyColumn === null) {
+            $hasPathologyColumn = Schema::hasColumn('doctors', 'is_pathology');
+        }
+
+        return $hasPathologyColumn;
+    }
+
+    private function doctorsByScope(Request $request)
+    {
+        $query = Doctor::query();
+
+        if ($this->hasPathologyColumn()) {
+            $query->where('is_pathology', $this->isPathologyScope($request));
+        }
+
+        return $query;
+    }
+
     private function isPathologyScope(Request $request): bool
     {
         return $request->routeIs('pathology.doctor.*') || $request->is('pathology/doctor*');
@@ -22,7 +45,7 @@ class DoctorController extends Controller
         $isPathology = $this->isPathologyScope($request);
 
         if ($request->ajax()) {
-            $doctors = Doctor::query()->where('is_pathology', $isPathology);
+            $doctors = $this->doctorsByScope($request);
             return datatables()->of($doctors)
                 ->addIndexColumn()
                 ->addColumn('photo', function($row) {
@@ -92,7 +115,9 @@ class DoctorController extends Controller
         Log::info('Doctor store request validated', $data);
         $data['doctor_id'] = Doctor::max('doctor_id') + 1;
         $data['status'] = 'Active';
-        $data['is_pathology'] = $isPathology;
+        if ($this->hasPathologyColumn()) {
+            $data['is_pathology'] = $isPathology;
+        }
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('doctor_photos', 'public');
             $data['photo'] = basename($path);
@@ -107,7 +132,7 @@ class DoctorController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
+        $doctor = $this->doctorsByScope($request)->findOrFail($id);
         return response()->json($doctor);
     }
 
@@ -124,7 +149,7 @@ class DoctorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
+        $doctor = $this->doctorsByScope($request)->findOrFail($id);
         // Photo is optional for update
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -161,7 +186,7 @@ class DoctorController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
+        $doctor = $this->doctorsByScope($request)->findOrFail($id);
         if ($doctor->photo) {
             Storage::delete('public/doctor_photos/'.$doctor->photo);
         }
@@ -174,7 +199,7 @@ class DoctorController extends Controller
      */
     public function toggleStatus($id, Request $request)
     {
-        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
+        $doctor = $this->doctorsByScope($request)->findOrFail($id);
         $doctor->status = $request->status;
         $doctor->save();
         return response()->json(['success' => true, 'message' => 'Doctor status updated successfully.']);
@@ -185,7 +210,7 @@ class DoctorController extends Controller
      */
     public function print(Request $request, $id)
     {
-        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
+        $doctor = $this->doctorsByScope($request)->findOrFail($id);
         return view('doctor.print', compact('doctor'));
     }
 
@@ -194,7 +219,7 @@ class DoctorController extends Controller
      */
     public function idCard(Request $request, $id)
     {
-        $doctor = Doctor::where('is_pathology', $this->isPathologyScope($request))->findOrFail($id);
+        $doctor = $this->doctorsByScope($request)->findOrFail($id);
         return view('doctor.id_card', compact('doctor'));
     }
 }
