@@ -16,6 +16,10 @@
                 $incomeExpenseActive = request()->routeIs('income_category.*') || request()->routeIs('income_item.*') || request()->is('income_expense*');
                 $accountsActive = request()->routeIs('payment.*') || request()->routeIs('receipt.*') || request()->routeIs('quick-receipt');
                 $reportsActive = request()->is('reports/*');
+                $pathologyActive = request()->routeIs('dashboard')
+                    || request()->routeIs('doctor.*')
+                    || request()->routeIs('patients.*')
+                    || request()->is('pathology/*');
             @endphp
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
@@ -23,6 +27,45 @@
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
+                </li>
+
+                <li class="nav-item has-treeview {{ $pathologyActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $pathologyActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-flask"></i>
+                        <p>
+                            Pathology
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('doctor.index') }}" class="nav-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Doctors</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Patients</p>
+                            </a>
+                        </li>
+                        <li class="nav-item"><a href="{{ url('pathology/main-test-categories') }}" class="nav-link {{ request()->is('pathology/main-test-categories') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Main Test Categories</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/test-categories') }}" class="nav-link {{ request()->is('pathology/test-categories') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Test Categories</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/tests') }}" class="nav-link {{ request()->is('pathology/tests') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Tests</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/entries') }}" class="nav-link {{ request()->is('pathology/entries') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Entries</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/reports') }}" class="nav-link {{ request()->is('pathology/reports') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Reports</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/menu-plan') }}" class="nav-link {{ request()->is('pathology/menu-plan') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Menu Plan</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/notices') }}" class="nav-link {{ request()->is('pathology/notices') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Notices</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/uploads') }}" class="nav-link {{ request()->is('pathology/uploads') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Uploads</p></a></li>
+                        <li class="nav-item"><a href="{{ url('pathology/owners') }}" class="nav-link {{ request()->is('pathology/owners') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Owners</p></a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
