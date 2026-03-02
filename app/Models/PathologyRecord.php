@@ -11,6 +11,8 @@ class PathologyRecord extends Model
 
     protected $fillable = [
         'section',
+        'main_test_category_id',
+        'test_category_id',
         'name',
         'description',
     ];

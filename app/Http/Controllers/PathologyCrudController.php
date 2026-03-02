@@ -6,6 +6,7 @@ use App\Models\PathologyRecord;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PathologyCrudController extends Controller
 {
@@ -35,11 +36,16 @@ class PathologyCrudController extends Controller
         $this->assertValidSection($section);
 
         try {
-            $records = PathologyRecord::query()
-                ->select('id', 'name', 'description')
+            $recordsQuery = PathologyRecord::query()
+                ->select('id', 'main_test_category_id', 'test_category_id', 'name', 'description')
                 ->where('section', $section)
                 ->latest('id')
-                ->get();
+                ->when(
+                    $section === 'test-categories' && request()->filled('main_test_category_id'),
+                    fn ($query) => $query->where('main_test_category_id', request('main_test_category_id'))
+                );
+
+            $records = $recordsQuery->get();
         } catch (QueryException $exception) {
             if ($this->isMissingTableException($exception)) {
                 return response()->json([
@@ -59,9 +65,40 @@ class PathologyCrudController extends Controller
         $this->assertValidSection($section);
 
         $validated = $request->validate([
+            'main_test_category_id' => [
+                'nullable',
+                'integer',
+                'exists:pathology_main_test_categories,id',
+                Rule::requiredIf(in_array($section, ['test-categories', 'tests'], true)),
+            ],
+            'test_category_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('pathology_records', 'id')->where('section', 'test-categories'),
+                Rule::requiredIf($section === 'tests'),
+            ],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
         ]);
+
+        if ($section !== 'tests') {
+            $validated['test_category_id'] = null;
+        }
+
+        if ($section === 'tests') {
+            $isValidPair = PathologyRecord::query()
+                ->where('section', 'test-categories')
+                ->where('id', $validated['test_category_id'])
+                ->where('main_test_category_id', $validated['main_test_category_id'])
+                ->exists();
+
+            if (! $isValidPair) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected test category does not belong to the selected main test category.',
+                ], 422);
+            }
+        }
 
         try {
             PathologyRecord::create($validated + ['section' => $section]);
@@ -87,9 +124,40 @@ class PathologyCrudController extends Controller
         $this->assertValidSection($section);
 
         $validated = $request->validate([
+            'main_test_category_id' => [
+                'nullable',
+                'integer',
+                'exists:pathology_main_test_categories,id',
+                Rule::requiredIf(in_array($section, ['test-categories', 'tests'], true)),
+            ],
+            'test_category_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('pathology_records', 'id')->where('section', 'test-categories'),
+                Rule::requiredIf($section === 'tests'),
+            ],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
         ]);
+
+        if ($section !== 'tests') {
+            $validated['test_category_id'] = null;
+        }
+
+        if ($section === 'tests') {
+            $isValidPair = PathologyRecord::query()
+                ->where('section', 'test-categories')
+                ->where('id', $validated['test_category_id'])
+                ->where('main_test_category_id', $validated['main_test_category_id'])
+                ->exists();
+
+            if (! $isValidPair) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected test category does not belong to the selected main test category.',
+                ], 422);
+            }
+        }
 
         try {
             $record = PathologyRecord::query()
