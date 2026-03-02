@@ -87,6 +87,13 @@ Route::middleware('auth')->group(function () {
     Route::post('doctor/toggle-status/{id}', [App\Http\Controllers\DoctorController::class, 'toggleStatus']);
     Route::get('doctor/print/{id}', [App\Http\Controllers\DoctorController::class, 'print'])->name('doctor.print');
     Route::get('doctor/id_card/{id}', [App\Http\Controllers\DoctorController::class, 'idCard'])->name('doctor.id_card');
+
+    Route::prefix('pathology')->name('pathology.')->group(function () {
+        Route::resource('doctor', App\Http\Controllers\DoctorController::class)->names('doctor');
+        Route::post('doctor/toggle-status/{id}', [App\Http\Controllers\DoctorController::class, 'toggleStatus'])->name('doctor.toggle-status');
+        Route::get('doctor/print/{id}', [App\Http\Controllers\DoctorController::class, 'print'])->name('doctor.print');
+        Route::get('doctor/id_card/{id}', [App\Http\Controllers\DoctorController::class, 'idCard'])->name('doctor.id_card');
+    });
     Route::get('schedule/doctors', [App\Http\Controllers\DoctorScheduleController::class, 'getDoctors']);
     Route::post('schedule/toggle-status/{id}', [App\Http\Controllers\DoctorScheduleController::class, 'toggleStatus']);
     Route::resource('schedule', App\Http\Controllers\DoctorScheduleController::class);

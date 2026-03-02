@@ -6,14 +6,14 @@
             <div class="col-sm-6">
                 <h1 class="m-0 fw-bold">
                     <i class="fas fa-user-md text-primary me-2"></i>
-                    Doctor Management
+                    {{ $doctorPageTitle ?? 'Doctor Management' }}
                 </h1>
-                <p class="text-muted">Manage hospital doctors and medical staff</p>
+                <p class="text-muted">{{ $doctorPageDescription ?? 'Manage hospital doctors and medical staff' }}</p>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Doctors</li>
+                    <li class="breadcrumb-item active">{{ $doctorBreadcrumb ?? 'Doctors' }}</li>
                 </ol>
             </div>
         </div>
@@ -30,7 +30,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-0 text-primary">
-                                <i class="fas fa-list me-2"></i>Doctor Directory
+                                <i class="fas fa-list me-2"></i>{{ $doctorDirectoryTitle ?? 'Doctor Directory' }}
                             </h5>
                         </div>
                         <button class="btn btn-primary btn-lg" id="addDoctorBtn">
@@ -46,7 +46,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white border-0">
             <h6 class="mb-0 text-dark">
-                <i class="fas fa-table me-2"></i>Doctor Records
+                <i class="fas fa-table me-2"></i>{{ $doctorRecordsTitle ?? 'Doctor Records' }}
             </h6>
         </div>
         <div class="card-body">
@@ -310,7 +310,7 @@ $(function() {
     });    table = $('#doctorTable').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '/doctor',
+        ajax: @json($doctorBaseUrl ?? '/doctor'),
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { 
@@ -383,7 +383,7 @@ $(function() {
     $(document).on('click', '.editBtn', function(){
         let id = $(this).data('id');
         toastr.info('Loading doctor data...');
-        $.get('/doctor/' + id)
+        $.get((@json($doctorBaseUrl ?? '/doctor')) + '/' + id)
         .done(function(doctor){
             $('#doctorId').val(doctor.id || '');
             if(doctor.photo) {
@@ -419,7 +419,7 @@ $(function() {
     $(document).on('click', '.viewBtn', function(){
         let id = $(this).data('id');
         toastr.info('Loading doctor details...');
-        $.get('/doctor/' + id)
+        $.get((@json($doctorBaseUrl ?? '/doctor')) + '/' + id)
         .done(function(doctor){
             $('#viewDoctorId').val(doctor.id);
             if(doctor.photo) {
@@ -465,7 +465,7 @@ $(function() {
         toastr.clear();
         toastr.info('Deleting doctor...');
         $.ajax({
-            url: '/doctor/' + id,
+            url: (@json($doctorBaseUrl ?? '/doctor')) + '/' + id,
             type: 'DELETE',
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             success: function(response){
@@ -486,7 +486,7 @@ $(function() {
         let $this = $(this);
         
         toastr.info('Updating doctor status...');        $.ajax({
-            url: `/doctor/toggle-status/${id}`,
+            url: `${(@json($doctorBaseUrl ?? '/doctor'))}/toggle-status/${id}`,
             type: 'POST',
             data: {
                 status: status,
@@ -512,7 +512,8 @@ $(function() {
     $('#doctorForm').submit(function(e){
         e.preventDefault();
         let id = $('#doctorId').val();
-        let url = id ? '/doctor/' + id : '/doctor';
+        let baseUrl = @json($doctorBaseUrl ?? '/doctor');
+        let url = id ? baseUrl + '/' + id : baseUrl;
         let type = 'POST';
         let formData = new FormData(this);
         if (id) formData.append('_method', 'PUT');
