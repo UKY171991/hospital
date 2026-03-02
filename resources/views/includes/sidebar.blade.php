@@ -16,7 +16,7 @@
                 $incomeExpenseActive = request()->routeIs('income_category.*') || request()->routeIs('income_item.*') || request()->is('income_expense*');
                 $accountsActive = request()->routeIs('payment.*') || request()->routeIs('receipt.*') || request()->routeIs('quick-receipt');
                 $reportsActive = request()->is('reports/*');
-                $pathologyActive = request()->routeIs('dashboard')
+                $pathologyActive = request()->routeIs('pathology.dashboard')
                     || request()->routeIs('doctor.*')
                     || request()->routeIs('patients.*')
                     || request()->is('pathology/*');
@@ -39,7 +39,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('pathology.dashboard') }}" class="nav-link {{ request()->routeIs('pathology.dashboard') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Dashboard</p>
                             </a>

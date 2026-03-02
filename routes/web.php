@@ -48,6 +48,9 @@ Route::get('/test', function() {
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/pathology/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('pathology.dashboard');
+
 Route::get('/employee', function () {
     return redirect('/employees');
 })->middleware('auth');
