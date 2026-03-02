@@ -20,6 +20,10 @@
                     || request()->routeIs('pathology.doctor.*')
                     || request()->routeIs('patients.*')
                     || request()->is('pathology/*');
+                $hospitalMenuActive = request()->routeIs('users.*')
+                    || request()->routeIs('hospitals.*')
+                    || request()->routeIs('employees.*')
+                    || request()->routeIs('item.*');
             @endphp
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
@@ -67,29 +71,40 @@
                         <li class="nav-item"><a href="{{ url('pathology/owners') }}" class="nav-link {{ request()->is('pathology/owners') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Owners</p></a></li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Users</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('hospitals.index') }}" class="nav-link {{ request()->routeIs('hospitals.*') ? 'active' : '' }}">
+                <li class="nav-item has-treeview {{ $hospitalMenuActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $hospitalMenuActive ? 'active' : '' }}">
                         <i class="nav-icon fas fa-hospital-alt"></i>
-                        <p>Hospital</p>
+                        <p>
+                            Hospital
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-tie"></i>
-                        <p>Employee</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('item.index') }}" class="nav-link {{ request()->routeIs('item.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-boxes"></i>
-                        <p>Items</p>
-                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Users</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('hospitals.index') }}" class="nav-link {{ request()->routeIs('hospitals.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Hospital Profile</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Employees</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('item.index') }}" class="nav-link {{ request()->routeIs('item.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Items</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 
                 <li class="nav-item has-treeview {{ $setupActive ? 'menu-open' : '' }}">
