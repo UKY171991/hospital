@@ -1,30 +1,17 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
     <a href="{{ url('/') }}" class="brand-link">
         <span class="brand-text font-weight-light">HEALTHCARE HOSPITAL</span>
     </a>
-    <!-- Sidebar -->
+
     <div class="sidebar">
-        <!-- Sidebar Menu -->
+        @php
+            $hospitalActive = request()->routeIs('department.*') || request()->routeIs('ward.*') || request()->routeIs('bed.*') || request()->is('appointment-slots*');
+            $setupActive = request()->is('settings/general*') || request()->is('settings/email*') || request()->is('settings/sms*');
+            $patientActive = request()->routeIs('opd.*') || request()->routeIs('ipd.*') || request()->is('emergency*');
+            $frontOfficeActive = request()->is('reception*') || request()->routeIs('enquiry.*') || request()->is('visitors-log*');
+        @endphp
+
         <nav class="mt-2">
-            @php
-                $setupActive = request()->routeIs('department.*') || request()->routeIs('disease.*') || request()->routeIs('fee_assign.*') || request()->routeIs('investigation.*') || request()->routeIs('ward.*') || request()->routeIs('room.*') || request()->routeIs('bed.*') || request()->routeIs('assign_bed.*');
-                $doctorActive = request()->routeIs('doctor.*') || request()->routeIs('schedule.*');
-                $patientActive = request()->routeIs('patients.*') || request()->routeIs('opd.*') || request()->routeIs('ipd.*') || request()->routeIs('item_mapping.*');
-                $inventoryActive = request()->routeIs('suppliers.*') || request()->routeIs('sale_item.*') || request()->routeIs('purchase_item.*') || request()->routeIs('item_stock.*');
-                $frontOfficeActive = request()->routeIs('complaint_type.*') || request()->routeIs('reference.*') || request()->routeIs('enquiry.*') || request()->routeIs('complaint.*') || request()->routeIs('postal_dispatch.*') || request()->routeIs('postal_receive.*') || request()->routeIs('call_log.*');
-                $incomeExpenseActive = request()->routeIs('income_category.*') || request()->routeIs('income_item.*') || request()->is('income_expense*');
-                $accountsActive = request()->routeIs('payment.*') || request()->routeIs('receipt.*') || request()->routeIs('quick-receipt');
-                $reportsActive = request()->is('reports/*');
-                $pathologyActive = request()->routeIs('pathology.dashboard')
-                    || request()->routeIs('pathology.doctor.*')
-                    || request()->routeIs('patients.*')
-                    || request()->is('pathology/*');
-                $hospitalMenuActive = request()->routeIs('users.*')
-                    || request()->routeIs('hospitals.*')
-                    || request()->routeIs('employees.*')
-                    || request()->routeIs('item.*');
-            @endphp
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -33,163 +20,84 @@
                     </a>
                 </li>
 
-                <li class="nav-item has-treeview {{ $pathologyActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $pathologyActive ? 'active' : '' }}">
+                <li class="nav-item">
+                    <a href="{{ url('pathology') }}" class="nav-link {{ request()->is('pathology*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-flask"></i>
-                        <p>
-                            Pathology
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
+                        <p>Pathology</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('pathology.dashboard') }}" class="nav-link {{ request()->routeIs('pathology.dashboard') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('pathology.doctor.index') }}" class="nav-link {{ request()->routeIs('pathology.doctor.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Doctors</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Patients</p>
-                            </a>
-                        </li>
-                        <li class="nav-item"><a href="{{ url('pathology/main-test-categories') }}" class="nav-link {{ request()->is('pathology/main-test-categories') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Main Test Categories</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/test-categories') }}" class="nav-link {{ request()->is('pathology/test-categories') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Test Categories</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/tests') }}" class="nav-link {{ request()->is('pathology/tests') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Tests</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/entries') }}" class="nav-link {{ request()->is('pathology/entries') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Entries</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/reports') }}" class="nav-link {{ request()->is('pathology/reports') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Reports</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/menu-plan') }}" class="nav-link {{ request()->is('pathology/menu-plan') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Menu Plan</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/notices') }}" class="nav-link {{ request()->is('pathology/notices') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Notices</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/uploads') }}" class="nav-link {{ request()->is('pathology/uploads') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Uploads</p></a></li>
-                        <li class="nav-item"><a href="{{ url('pathology/owners') }}" class="nav-link {{ request()->is('pathology/owners') ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Owners</p></a></li>
-                    </ul>
                 </li>
-                <li class="nav-item has-treeview {{ $hospitalMenuActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $hospitalMenuActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-hospital-alt"></i>
+
+                <li class="nav-item has-treeview {{ $hospitalActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $hospitalActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-hospital"></i>
                         <p>
                             Hospital
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Users</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('hospitals.index') }}" class="nav-link {{ request()->routeIs('hospitals.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Hospital Profile</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Employees</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('item.index') }}" class="nav-link {{ request()->routeIs('item.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Items</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item has-treeview {{ $setupActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $setupActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>
-                            Setup
-                            <i class="fas fa-angle-left right"></i>
+                            <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ route('department.index') }}" class="nav-link {{ request()->routeIs('department.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Departments</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('disease.index') }}" class="nav-link {{ request()->routeIs('disease.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Disease</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('fee_assign.index') }}" class="nav-link {{ request()->routeIs('fee_assign.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Fee Assign</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('investigation.index') }}" class="nav-link {{ request()->routeIs('investigation.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Investigations</p>
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Department</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('ward.index') }}" class="nav-link {{ request()->routeIs('ward.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Wards</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('room.index') }}" class="nav-link {{ request()->routeIs('room.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Rooms</p>
+                                <i class="nav-icon fas fa-procedures"></i>
+                                <p>Ward</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('bed.index') }}" class="nav-link {{ request()->routeIs('bed.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Beds</p>
+                                <i class="nav-icon fas fa-bed"></i>
+                                <p>Bed</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('assign_bed.index') }}" class="nav-link {{ request()->routeIs('assign_bed.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Assign Beds</p>
+                            <a href="{{ url('appointment-slots') }}" class="nav-link {{ request()->is('appointment-slots*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-calendar-alt"></i>
+                                <p>Appointment Slots</p>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                <!-- Doctor Menu -->
-                <li class="nav-item has-treeview {{ $doctorActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $doctorActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-md"></i>
+                <li class="nav-item has-treeview {{ $setupActive ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ $setupActive ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-cogs"></i>
                         <p>
-                            Doctor
-                            <i class="fas fa-angle-left right"></i>
+                            Setup
+                            <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('doctor.index') }}" class="nav-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Doctor Registration</p>
+                            <a href="{{ url('settings/general') }}" class="nav-link {{ request()->is('settings/general*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-sliders-h"></i>
+                                <p>General Setting</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('schedule.index') }}" class="nav-link {{ request()->routeIs('schedule.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Doctor Schedule</p>
+                            <a href="{{ url('settings/email') }}" class="nav-link {{ request()->is('settings/email*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-envelope"></i>
+                                <p>Email Setting</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('settings/sms') }}" class="nav-link {{ request()->is('settings/sms*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-sms"></i>
+                                <p>SMS Setting</p>
                             </a>
                         </li>
                     </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('doctor.index') }}" class="nav-link {{ request()->routeIs('doctor.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-md"></i>
+                        <p>Doctor</p>
+                    </a>
                 </li>
 
                 <li class="nav-item">
@@ -199,232 +107,94 @@
                     </a>
                 </li>
 
-                <!-- Patient Menu -->
                 <li class="nav-item has-treeview {{ $patientActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $patientActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-procedures"></i>
+                        <i class="nav-icon fas fa-user-injured"></i>
                         <p>
                             Patient
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
+                            <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Patient Registration</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="{{ route('opd.index') }}" class="nav-link {{ request()->routeIs('opd.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Out Patient Dept</p>
+                                <i class="nav-icon fas fa-stethoscope"></i>
+                                <p>OPD</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('ipd.index') }}" class="nav-link {{ request()->routeIs('ipd.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>In Patient Dept</p>
+                                <i class="nav-icon fas fa-hospital-user"></i>
+                                <p>IPD</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('item_mapping.index') }}" class="nav-link {{ request()->routeIs('item_mapping.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Item Dept</p>
+                            <a href="{{ url('emergency') }}" class="nav-link {{ request()->is('emergency*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-ambulance"></i>
+                                <p>Emergency</p>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                <!-- Inventory Menu -->
-                <li class="nav-item has-treeview {{ $inventoryActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $inventoryActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-warehouse"></i>
-                        <p>
-                            Inventory
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
+                <li class="nav-item">
+                    <a href="{{ route('item_stock.index') }}" class="nav-link {{ request()->routeIs('item_stock.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-boxes"></i>
+                        <p>Inventory</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('suppliers.index') }}" class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Suppliers</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('sale_item.index') }}" class="nav-link {{ request()->routeIs('sale_item.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Sale Item</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('purchase_item.index') }}" class="nav-link {{ request()->routeIs('purchase_item.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Purchase Item</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('item_stock.index') }}" class="nav-link {{ request()->routeIs('item_stock.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Item Stock</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
-                <!-- Front-Office Menu -->
                 <li class="nav-item has-treeview {{ $frontOfficeActive ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ $frontOfficeActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-headset"></i>
+                        <i class="nav-icon fas fa-concierge-bell"></i>
                         <p>
                             Front-Office
-                            <i class="fas fa-angle-left right"></i>
+                            <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('complaint_type.index') }}" class="nav-link {{ request()->routeIs('complaint_type.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Complaint Type</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('reference.index') }}" class="nav-link {{ request()->routeIs('reference.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Reference</p>
+                            <a href="{{ url('reception') }}" class="nav-link {{ request()->is('reception*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-door-open"></i>
+                                <p>Reception</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('enquiry.index') }}" class="nav-link {{ request()->routeIs('enquiry.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Enquiry</p>
+                                <i class="nav-icon fas fa-question-circle"></i>
+                                <p>Enquiries</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('complaint.index') }}" class="nav-link {{ request()->routeIs('complaint.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Complaint</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('postal_dispatch.index') }}" class="nav-link {{ request()->routeIs('postal_dispatch.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Postal Dispatch</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('postal_receive.index') }}" class="nav-link {{ request()->routeIs('postal_receive.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Postal Receive</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('call_log.index') }}" class="nav-link {{ request()->routeIs('call_log.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Call Log</p>
+                            <a href="{{ url('visitors-log') }}" class="nav-link {{ request()->is('visitors-log*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-clipboard-list"></i>
+                                <p>Visitors Log</p>
                             </a>
                         </li>
                     </ul>
                 </li>
 
-                <!-- Income/Expenses Menu -->
-                <li class="nav-item has-treeview {{ $incomeExpenseActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $incomeExpenseActive ? 'active' : '' }}">
+                <li class="nav-item">
+                    <a href="{{ url('income_expense') }}" class="nav-link {{ request()->is('income_expense*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>
-                            Income/Expenses
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
+                        <p>Income/Expenses</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('income_category.index') }}" class="nav-link {{ request()->is('income_category*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Income/Expenses</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('income_item.index') }}" class="nav-link {{ request()->is('income_item*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Income/Expenses Items</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('/income_expense') }}" class="nav-link {{ request()->is('income_expense') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Income/Expenses</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
-                <!-- Accounts Menu -->
-                <li class="nav-item has-treeview {{ $accountsActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $accountsActive ? 'active' : '' }}">
+                <li class="nav-item">
+                    <a href="{{ url('accounts') }}" class="nav-link {{ request()->is('accounts*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calculator"></i>
-                        <p>
-                            Accounts
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
+                        <p>Accounts</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ route('payment.index') }}" class="nav-link {{ request()->routeIs('payment.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Payment</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('receipt.index') }}" class="nav-link {{ request()->routeIs('receipt.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Receipt</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('quick-receipt') }}" class="nav-link {{ request()->routeIs('quick-receipt') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Quick Receipt</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
 
-                <!-- Reports Menu (AdminLTE 3 style) -->
-                <li class="nav-item has-treeview {{ $reportsActive ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ $reportsActive ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-file-alt"></i>
-                        <p>
-                            Reports
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
+                <li class="nav-item">
+                    <a href="{{ url('reports') }}" class="nav-link {{ request()->is('reports*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>Reports</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{ url('/reports/ledger') }}" class="nav-link {{ request()->is('reports/ledger*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Ledger</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('/reports/patient') }}" class="nav-link {{ request()->is('reports/patient*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Patient Report</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ url('/reports/balance-sheet') }}" class="nav-link {{ request()->is('reports/balance-sheet*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Balance Sheet</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
             </ul>
         </nav>
-        <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
 </aside>
