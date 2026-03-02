@@ -6,10 +6,41 @@
 
 @section('content')
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
         <div class="card card-primary">
-            <div class="card-header"><b>Create {{ $title }} Record</b></div>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <b>Manage {{ $title }}</b>
+                <button type="button" class="btn btn-success btn-sm" id="openCreateModalBtn">
+                    <i class="fas fa-plus"></i> Add {{ $title }}
+                </button>
+            </div>
             <div class="card-body">
+                <table id="pathologyCrudTable" class="table table-bordered table-striped">
+                    <thead class="bg-danger text-white">
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="pathologyCrudModal" tabindex="-1" role="dialog" aria-labelledby="pathologyCrudModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="pathologyCrudModalLabel">Create {{ $title }} Record</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
                 <form id="pathologyCrudForm">
                     <input type="hidden" id="record_id" name="record_id">
 
@@ -36,35 +67,15 @@
                         <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group mb-0">
                         <label for="description">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter description"></textarea>
                     </div>
-
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
-                    <button type="button" id="resetFormBtn" class="btn btn-secondary">Reset</button>
                 </form>
             </div>
-        </div>
-    </div>
-
-    <div class="col-md-8">
-        <div class="card card-primary">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <b>Manage {{ $title }}</b>
-            </div>
-            <div class="card-body">
-                <table id="pathologyCrudTable" class="table table-bordered table-striped">
-                    <thead class="bg-danger text-white">
-                        <tr>
-                            <th>S.No.</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <div class="modal-footer">
+                <button type="button" id="resetFormBtn" class="btn btn-secondary">Reset</button>
+                <button type="submit" form="pathologyCrudForm" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
             </div>
         </div>
     </div>
@@ -108,6 +119,7 @@ $(function() {
     function resetForm() {
         $('#pathologyCrudForm')[0].reset();
         $('#record_id').val('');
+        $('#pathologyCrudModalLabel').text(`Create {{ $title }} Record`);
 
         if (needsTestCategory) {
             $('#test_category_id').html('<option value="">Select test category</option>');
@@ -163,6 +175,14 @@ $(function() {
         });
     }
 
+    $('#openCreateModalBtn').on('click', function() {
+        resetForm();
+        if (needsMainCategory) {
+            loadMainCategories();
+        }
+        $('#pathologyCrudModal').modal('show');
+    });
+
     $('#resetFormBtn').on('click', resetForm);
 
     $('#pathologyCrudForm').submit(function(e) {
@@ -181,6 +201,7 @@ $(function() {
                 toastr.success('Saved successfully');
                 table.ajax.reload();
                 resetForm();
+                $('#pathologyCrudModal').modal('hide');
             },
             error: function(xhr) {
                 const message = xhr.responseJSON?.message || 'Error occurred';
@@ -193,6 +214,7 @@ $(function() {
         $('#record_id').val($(this).data('id'));
         $('#name').val($(this).data('name'));
         $('#description').val($(this).data('description'));
+        $('#pathologyCrudModalLabel').text(`Edit {{ $title }} Record`);
 
         const mainCategoryId = $(this).data('main-test-category-id');
         const testCategoryId = $(this).data('test-category-id');
@@ -204,6 +226,8 @@ $(function() {
         if (needsTestCategory) {
             loadTestCategories(mainCategoryId, testCategoryId);
         }
+
+        $('#pathologyCrudModal').modal('show');
     });
 
     $('#pathologyCrudTable').on('click', '.deleteBtn', function() {
