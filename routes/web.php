@@ -169,6 +169,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('income_expense/delete/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'destroy']);
     Route::prefix('pathology')->name('pathology.')->group(function () {
         Route::get('/main-test-categories', [PathologyMainTestCategoryController::class, 'index'])->name('main-test-categories.index');
+        Route::get('/main-test-categories/data', [PathologyMainTestCategoryController::class, 'data'])->name('main-test-categories.data');
         Route::post('/main-test-categories/store', [PathologyMainTestCategoryController::class, 'store'])->name('main-test-categories.store');
         Route::post('/main-test-categories/update/{id}', [PathologyMainTestCategoryController::class, 'update'])->name('main-test-categories.update');
         Route::delete('/main-test-categories/{id}', [PathologyMainTestCategoryController::class, 'destroy'])->name('main-test-categories.destroy');
