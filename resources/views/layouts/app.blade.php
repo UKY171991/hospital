@@ -272,6 +272,13 @@
                 --dark-color: #343a40;
             }
             
+
+            /* Bootstrap 5 utility compatibility in Bootstrap 4 pages */
+            .me-1 { margin-right: 0.25rem !important; }
+            .me-2 { margin-right: 0.5rem !important; }
+            .ms-1 { margin-left: 0.25rem !important; }
+            .ms-2 { margin-left: 0.5rem !important; }
+
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 background-color: #f4f6f9;
@@ -561,7 +568,7 @@
         <script>
             $(document).ready(function() {
                 // Initialize AdminLTE tree view
-                $('[data-widget="treeview"]').Treeview('init');
+                if ($.fn.Treeview) { $('[data-widget="treeview"]').Treeview('init'); }
                 
                 // Set up CSRF token for AJAX requests
                 $.ajaxSetup({
@@ -653,10 +660,10 @@
                         <div class="toast align-items-center text-white bg-${type}" role="alert" aria-live="assertive" aria-atomic="true">
                             <div class="d-flex">
                                 <div class="toast-body">
-                                    <i class="fas fa-${type === 'success' ? 'check-circle' : (type === 'danger' ? 'exclamation-circle' : 'info-circle')} me-2"></i>
+                                    <i class="fas fa-${type === 'success' ? 'check-circle' : (type === 'danger' ? 'exclamation-circle' : 'info-circle')} mr-2"></i>
                                     ${message}
                                 </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                                <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             </div>
                         </div>
                     `;
