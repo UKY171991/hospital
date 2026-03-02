@@ -27,6 +27,7 @@ use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\BalanceSheetController;
 use App\Http\Controllers\PathologyMainTestCategoryController;
+use App\Http\Controllers\PathologyCrudController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -173,14 +174,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/main-test-categories/store', [PathologyMainTestCategoryController::class, 'store'])->name('main-test-categories.store');
         Route::post('/main-test-categories/update/{id}', [PathologyMainTestCategoryController::class, 'update'])->name('main-test-categories.update');
         Route::delete('/main-test-categories/{id}', [PathologyMainTestCategoryController::class, 'destroy'])->name('main-test-categories.destroy');
-        Route::view('/test-categories', 'pathology.page', ['title' => 'Test Categories'])->name('test-categories');
-        Route::view('/tests', 'pathology.page', ['title' => 'Tests'])->name('tests');
-        Route::view('/entries', 'pathology.page', ['title' => 'Entries'])->name('entries');
-        Route::view('/reports', 'pathology.page', ['title' => 'Reports'])->name('reports');
-        Route::view('/menu-plan', 'pathology.page', ['title' => 'Menu Plan'])->name('menu-plan');
-        Route::view('/notices', 'pathology.page', ['title' => 'Notices'])->name('notices');
-        Route::view('/uploads', 'pathology.page', ['title' => 'Uploads'])->name('uploads');
-        Route::view('/owners', 'pathology.page', ['title' => 'Owners'])->name('owners');
+
+        foreach (['test-categories', 'tests', 'entries', 'reports', 'menu-plan', 'notices', 'uploads', 'owners'] as $section) {
+            Route::get("/{$section}", [PathologyCrudController::class, 'index'])->name("{$section}");
+            Route::get("/{$section}/data", [PathologyCrudController::class, 'data'])->name("{$section}.data");
+            Route::post("/{$section}/store", [PathologyCrudController::class, 'store'])->name("{$section}.store");
+            Route::post("/{$section}/update/{id}", [PathologyCrudController::class, 'update'])->name("{$section}.update");
+            Route::delete("/{$section}/{id}", [PathologyCrudController::class, 'destroy'])->name("{$section}.destroy");
+        }
     });
 
     Route::resource('payment', PaymentController::class);
