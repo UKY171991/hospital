@@ -37,12 +37,26 @@ class PathologyCrudController extends Controller
 
         try {
             $recordsQuery = PathologyRecord::query()
-                ->select('id', 'main_test_category_id', 'test_category_id', 'name', 'description')
-                ->where('section', $section)
-                ->latest('id')
+                ->from('pathology_records as records')
+                ->leftJoin('pathology_main_test_categories as main_categories', 'main_categories.id', '=', 'records.main_test_category_id')
+                ->leftJoin('pathology_records as test_categories', function ($join) {
+                    $join->on('test_categories.id', '=', 'records.test_category_id')
+                        ->where('test_categories.section', 'test-categories');
+                })
+                ->select(
+                    'records.id',
+                    'records.main_test_category_id',
+                    'records.test_category_id',
+                    'records.name',
+                    'records.description',
+                    'main_categories.name as main_test_category_name',
+                    'test_categories.name as test_category_name'
+                )
+                ->where('records.section', $section)
+                ->latest('records.id')
                 ->when(
                     $section === 'test-categories' && request()->filled('main_test_category_id'),
-                    fn ($query) => $query->where('main_test_category_id', request('main_test_category_id'))
+                    fn ($query) => $query->where('records.main_test_category_id', request('main_test_category_id'))
                 );
 
             $records = $recordsQuery->get();
