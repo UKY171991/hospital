@@ -26,6 +26,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\BalanceSheetController;
+use App\Http\Controllers\PathologyMainTestCategoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -167,7 +168,10 @@ Route::middleware('auth')->group(function () {
     Route::post('income_expense/update/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'update']);
     Route::delete('income_expense/delete/{id}', [App\Http\Controllers\IncomeExpenseController::class, 'destroy']);
     Route::prefix('pathology')->name('pathology.')->group(function () {
-        Route::view('/main-test-categories', 'pathology.page', ['title' => 'Main Test Categories'])->name('main-test-categories');
+        Route::get('/main-test-categories', [PathologyMainTestCategoryController::class, 'index'])->name('main-test-categories.index');
+        Route::post('/main-test-categories/store', [PathologyMainTestCategoryController::class, 'store'])->name('main-test-categories.store');
+        Route::post('/main-test-categories/update/{id}', [PathologyMainTestCategoryController::class, 'update'])->name('main-test-categories.update');
+        Route::delete('/main-test-categories/{id}', [PathologyMainTestCategoryController::class, 'destroy'])->name('main-test-categories.destroy');
         Route::view('/test-categories', 'pathology.page', ['title' => 'Test Categories'])->name('test-categories');
         Route::view('/tests', 'pathology.page', ['title' => 'Tests'])->name('tests');
         Route::view('/entries', 'pathology.page', ['title' => 'Entries'])->name('entries');
