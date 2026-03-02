@@ -176,11 +176,21 @@ Route::middleware('auth')->group(function () {
         Route::delete('/main-test-categories/{id}', [PathologyMainTestCategoryController::class, 'destroy'])->name('main-test-categories.destroy');
 
         foreach (['test-categories', 'tests', 'entries', 'reports', 'menu-plan', 'notices', 'uploads', 'owners'] as $section) {
-            Route::get("/{$section}", [PathologyCrudController::class, 'index'])->name("{$section}");
-            Route::get("/{$section}/data", [PathologyCrudController::class, 'data'])->name("{$section}.data");
-            Route::post("/{$section}/store", [PathologyCrudController::class, 'store'])->name("{$section}.store");
-            Route::post("/{$section}/update/{id}", [PathologyCrudController::class, 'update'])->name("{$section}.update");
-            Route::delete("/{$section}/{id}", [PathologyCrudController::class, 'destroy'])->name("{$section}.destroy");
+            Route::get("/{$section}", [PathologyCrudController::class, 'index'])
+                ->defaults('section', $section)
+                ->name("{$section}");
+            Route::get("/{$section}/data", [PathologyCrudController::class, 'data'])
+                ->defaults('section', $section)
+                ->name("{$section}.data");
+            Route::post("/{$section}/store", [PathologyCrudController::class, 'store'])
+                ->defaults('section', $section)
+                ->name("{$section}.store");
+            Route::post("/{$section}/update/{id}", [PathologyCrudController::class, 'update'])
+                ->defaults('section', $section)
+                ->name("{$section}.update");
+            Route::delete("/{$section}/{id}", [PathologyCrudController::class, 'destroy'])
+                ->defaults('section', $section)
+                ->name("{$section}.destroy");
         }
     });
 
