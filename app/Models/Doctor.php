@@ -25,5 +25,6 @@ class Doctor extends Model
         'opening_balance',
         'photo',
         'status',
+        'is_pathology',
     ];
 }
