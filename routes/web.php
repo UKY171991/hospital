@@ -58,6 +58,66 @@ Route::get('/employee', function () {
 })->middleware('auth');
 
 Route::middleware('auth')->group(function () {
+    Route::view('/pathology', 'pages.coming-soon', [
+        'title' => 'Pathology',
+        'description' => 'Access pathology management modules from this section.',
+        'icon' => 'fas fa-flask',
+    ])->name('pathology.home');
+
+    Route::view('/appointment-slots', 'pages.coming-soon', [
+        'title' => 'Appointment Slots',
+        'description' => 'Manage doctor availability and patient appointment windows.',
+        'icon' => 'fas fa-calendar-alt',
+    ])->name('appointment-slots');
+
+    Route::view('/settings/general', 'pages.coming-soon', [
+        'title' => 'General Setting',
+        'description' => 'Update hospital profile, branding, and core system preferences.',
+        'icon' => 'fas fa-sliders-h',
+    ])->name('settings.general');
+
+    Route::view('/settings/email', 'pages.coming-soon', [
+        'title' => 'Email Setting',
+        'description' => 'Configure email sender, SMTP details, and notification templates.',
+        'icon' => 'fas fa-envelope',
+    ])->name('settings.email');
+
+    Route::view('/settings/sms', 'pages.coming-soon', [
+        'title' => 'SMS Setting',
+        'description' => 'Manage SMS gateway credentials and messaging preferences.',
+        'icon' => 'fas fa-sms',
+    ])->name('settings.sms');
+
+    Route::view('/emergency', 'pages.coming-soon', [
+        'title' => 'Emergency',
+        'description' => 'Track emergency cases, triage details, and critical admissions.',
+        'icon' => 'fas fa-ambulance',
+    ])->name('emergency');
+
+    Route::view('/reception', 'pages.coming-soon', [
+        'title' => 'Reception',
+        'description' => 'Handle walk-ins, visitor registration, and front desk operations.',
+        'icon' => 'fas fa-door-open',
+    ])->name('reception');
+
+    Route::view('/visitors-log', 'pages.coming-soon', [
+        'title' => 'Visitors Log',
+        'description' => 'Maintain visitor check-in/check-out records for security and audits.',
+        'icon' => 'fas fa-clipboard-list',
+    ])->name('visitors-log');
+
+    Route::view('/accounts', 'pages.coming-soon', [
+        'title' => 'Accounts',
+        'description' => 'Review account ledgers, journal postings, and financial controls.',
+        'icon' => 'fas fa-calculator',
+    ])->name('accounts');
+
+    Route::view('/reports', 'pages.coming-soon', [
+        'title' => 'Reports',
+        'description' => 'Open analytics and reporting modules for hospital operations.',
+        'icon' => 'fas fa-chart-bar',
+    ])->name('reports.home');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
