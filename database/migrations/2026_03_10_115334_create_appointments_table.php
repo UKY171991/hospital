@@ -21,6 +21,24 @@ return new class extends Migration
                 $table->string('status')->default('pending');
                 $table->timestamps();
             });
+        } else {
+            Schema::table('appointments', function (Blueprint $table) {
+                if (!Schema::hasColumn('appointments', 'patient_id')) {
+                    $table->foreignId('patient_id')->after('id')->constrained()->cascadeOnDelete();
+                }
+                if (!Schema::hasColumn('appointments', 'doctor_id')) {
+                    $table->foreignId('doctor_id')->after('patient_id')->constrained()->cascadeOnDelete();
+                }
+                if (!Schema::hasColumn('appointments', 'appointment_date')) {
+                    $table->dateTime('appointment_date')->after('doctor_id');
+                }
+                if (!Schema::hasColumn('appointments', 'reason')) {
+                    $table->text('reason')->nullable()->after('appointment_date');
+                }
+                if (!Schema::hasColumn('appointments', 'status')) {
+                    $table->string('status')->default('pending')->after('reason');
+                }
+            });
         }
     }
 

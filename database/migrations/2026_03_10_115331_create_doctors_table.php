@@ -22,6 +22,27 @@ return new class extends Migration
                 $table->string('status')->default('active');
                 $table->timestamps();
             });
+        } else {
+            Schema::table('doctors', function (Blueprint $table) {
+                if (!Schema::hasColumn('doctors', 'department_id')) {
+                    $table->foreignId('department_id')->after('id')->constrained()->cascadeOnDelete();
+                }
+                if (!Schema::hasColumn('doctors', 'name')) {
+                    $table->string('name')->after('department_id');
+                }
+                if (!Schema::hasColumn('doctors', 'email')) {
+                    $table->string('email')->unique()->after('name');
+                }
+                if (!Schema::hasColumn('doctors', 'phone')) {
+                    $table->string('phone')->after('email');
+                }
+                if (!Schema::hasColumn('doctors', 'consultation_fee')) {
+                    $table->decimal('consultation_fee', 10, 2)->after('phone');
+                }
+                if (!Schema::hasColumn('doctors', 'status')) {
+                    $table->string('status')->default('active')->after('consultation_fee');
+                }
+            });
         }
     }
 

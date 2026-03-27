@@ -23,6 +23,30 @@ return new class extends Migration
                 $table->string('blood_group')->nullable();
                 $table->timestamps();
             });
+        } else {
+            Schema::table('patients', function (Blueprint $table) {
+                if (!Schema::hasColumn('patients', 'name')) {
+                    $table->string('name')->after('id');
+                }
+                if (!Schema::hasColumn('patients', 'email')) {
+                    $table->string('email')->nullable()->after('name');
+                }
+                if (!Schema::hasColumn('patients', 'phone')) {
+                    $table->string('phone')->after('email');
+                }
+                if (!Schema::hasColumn('patients', 'dob')) {
+                    $table->date('dob')->after('phone');
+                }
+                if (!Schema::hasColumn('patients', 'gender')) {
+                    $table->string('gender')->after('dob');
+                }
+                if (!Schema::hasColumn('patients', 'address')) {
+                    $table->text('address')->nullable()->after('gender');
+                }
+                if (!Schema::hasColumn('patients', 'blood_group')) {
+                    $table->string('blood_group')->nullable()->after('address');
+                }
+            });
         }
     }
 

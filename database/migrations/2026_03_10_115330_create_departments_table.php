@@ -19,6 +19,18 @@ return new class extends Migration
                 $table->string('status')->default('active');
                 $table->timestamps();
             });
+        } else {
+            Schema::table('departments', function (Blueprint $table) {
+                if (!Schema::hasColumn('departments', 'name')) {
+                    $table->string('name')->after('id');
+                }
+                if (!Schema::hasColumn('departments', 'description')) {
+                    $table->text('description')->nullable()->after('name');
+                }
+                if (!Schema::hasColumn('departments', 'status')) {
+                    $table->string('status')->default('active')->after('description');
+                }
+            });
         }
     }
 
