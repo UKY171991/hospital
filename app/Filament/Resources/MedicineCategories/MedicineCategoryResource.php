@@ -16,8 +16,8 @@ class MedicineCategoryResource extends Resource
 {
     protected static ?string $model = MedicineCategory::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationGroup = 'Pharmacy';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
+    protected static string|\UnitEnum|null $navigationGroup = 'Pharmacy';
     protected static ?string $navigationLabel = 'Categories';
     protected static ?int $navigationSort = 3;
 

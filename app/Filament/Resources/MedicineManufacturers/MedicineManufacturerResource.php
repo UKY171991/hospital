@@ -16,8 +16,8 @@ class MedicineManufacturerResource extends Resource
 {
     protected static ?string $model = MedicineManufacturer::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office';
-    protected static ?string $navigationGroup = 'Pharmacy';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
+    protected static string|\UnitEnum|null $navigationGroup = 'Pharmacy';
     protected static ?string $navigationLabel = 'Manufacturers';
     protected static ?int $navigationSort = 4;
 
