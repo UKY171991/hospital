@@ -20,7 +20,16 @@ class PatientResource extends Resource
 {
     protected static ?string $model = Patient::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
+    protected static string|\UnitEnum|null $navigationGroup = 'OPD';
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        if (auth()->check() && !auth()->user()->canSeeAllRecords()) {
+            $query->where('user_id', auth()->id());
+        }
+        return $query;
+    }
 
     protected static ?string $recordTitleAttribute = 'name';
 

@@ -15,21 +15,29 @@ class DoctorsTable
     {
         return $table
             ->columns([
+                TextColumn::make('name')
+                    ->weight('bold')
+                    ->searchable(),
                 TextColumn::make('department_id')
                     ->numeric()
-                    ->sortable(),
-                TextColumn::make('name')
-                    ->searchable(),
+                    ->sortable()
+                    ->color('gray'),
                 TextColumn::make('email')
                     ->label('Email address')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('phone')
                     ->searchable(),
                 TextColumn::make('consultation_fee')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

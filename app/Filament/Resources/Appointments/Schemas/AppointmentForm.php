@@ -13,19 +13,30 @@ class AppointmentForm
     {
         return $schema
             ->components([
-                TextInput::make('patient_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('doctor_id')
-                    ->required()
-                    ->numeric(),
-                DateTimePicker::make('appointment_date')
+                \Filament\Forms\Components\Hidden::make('user_id')
+                    ->default(auth()->id())
                     ->required(),
-                Textarea::make('reason')
-                    ->columnSpanFull(),
+                \Filament\Forms\Components\Select::make('patient_id')
+                    ->relationship('patient', 'name')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
+                \Filament\Forms\Components\Select::make('doctor_id')
+                    ->relationship('doctor', 'name')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
+                DateTimePicker::make('appointment_date')
+                    ->required()
+                    ->native(false),
                 TextInput::make('status')
                     ->required()
-                    ->default('pending'),
-            ]);
+                    ->default('scheduled')
+                    ->placeholder('scheduled/completed/cancelled'),
+                Textarea::make('reason')
+                    ->columnSpanFull()
+                    ->rows(3),
+            ])
+            ->columns(2);
     }
 }

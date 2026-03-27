@@ -15,20 +15,23 @@ class MedicineSalesTable
     {
         return $table
             ->columns([
-                TextColumn::make('patient_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('medicine_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('patient.name')
+                    ->label('Patient')
+                    ->searchable()
+                    ->placeholder('Walk-in Patient'),
+                TextColumn::make('medicine.name')
+                    ->label('Medicine')
+                    ->searchable()
+                    ->weight('bold'),
                 TextColumn::make('quantity')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->alignment('center'),
                 TextColumn::make('total_amount')
-                    ->numeric()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('sale_date')
-                    ->date()
+                    ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

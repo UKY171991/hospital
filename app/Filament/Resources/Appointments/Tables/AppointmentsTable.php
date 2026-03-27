@@ -15,17 +15,25 @@ class AppointmentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('patient_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('doctor_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('patient.name')
+                    ->label('Patient')
+                    ->searchable()
+                    ->weight('bold'),
+                TextColumn::make('doctor.name')
+                    ->label('Doctor')
+                    ->searchable(),
                 TextColumn::make('appointment_date')
-                    ->dateTime()
+                    ->dateTime('M j, Y H:i')
                     ->sortable(),
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'scheduled' => 'info',
+                        'pending' => 'warning',
+                        'completed' => 'success',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

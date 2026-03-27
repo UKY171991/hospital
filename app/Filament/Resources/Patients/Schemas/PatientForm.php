@@ -13,21 +13,33 @@ class PatientForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
+                \Filament\Forms\Components\Hidden::make('user_id')
+                    ->default(auth()->id())
                     ->required(),
-                TextInput::make('email')
-                    ->label('Email address')
-                    ->email(),
+                TextInput::make('name')
+                    ->required()
+                    ->placeholder('Jane Doe'),
                 TextInput::make('phone')
                     ->tel()
-                    ->required(),
+                    ->required()
+                    ->placeholder('+1 (234) 567-890'),
+                TextInput::make('email')
+                    ->label('Email address')
+                    ->email()
+                    ->placeholder('jane@example.com'),
                 DatePicker::make('dob')
-                    ->required(),
+                    ->label('Date of Birth')
+                    ->required()
+                    ->native(false)
+                    ->displayFormat('d/m/Y'),
                 TextInput::make('gender')
                     ->required(),
+                TextInput::make('blood_group')
+                    ->placeholder('O+'),
                 Textarea::make('address')
-                    ->columnSpanFull(),
-                TextInput::make('blood_group'),
-            ]);
+                    ->columnSpanFull()
+                    ->rows(3),
+            ])
+            ->columns(2);
     }
 }

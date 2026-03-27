@@ -20,7 +20,8 @@ class DoctorResource extends Resource
 {
     protected static ?string $model = Doctor::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
+    protected static string|\UnitEnum|null $navigationGroup = 'OPD';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -37,6 +38,15 @@ class DoctorResource extends Resource
     public static function table(Table $table): Table
     {
         return DoctorsTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        if (auth()->check() && !auth()->user()->canSeeAllRecords()) {
+            $query->where('user_id', auth()->id());
+        }
+        return $query;
     }
 
     public static function getRelations(): array

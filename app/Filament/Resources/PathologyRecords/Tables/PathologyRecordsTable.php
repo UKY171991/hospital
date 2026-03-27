@@ -15,19 +15,27 @@ class PathologyRecordsTable
     {
         return $table
             ->columns([
-                TextColumn::make('patient_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('pathology_test_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('doctor_id')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('patient.name')
+                    ->label('Patient')
+                    ->searchable()
+                    ->weight('bold'),
+                TextColumn::make('pathologyTest.test_name')
+                    ->label('Test Type')
+                    ->searchable(),
+                TextColumn::make('doctor.name')
+                    ->label('Assigned Doctor')
+                    ->searchable(),
                 TextColumn::make('test_date')
-                    ->date()
+                    ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'completed' => 'success',
+                        'pending' => 'warning',
+                        'reported' => 'info',
+                        default => 'gray',
+                    })
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

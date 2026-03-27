@@ -13,21 +13,36 @@ class PathologyRecordForm
     {
         return $schema
             ->components([
-                TextInput::make('patient_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('pathology_test_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('doctor_id')
-                    ->numeric(),
-                DatePicker::make('test_date')
+                \Filament\Forms\Components\Hidden::make('user_id')
+                    ->default(auth()->id())
                     ->required(),
-                Textarea::make('result')
-                    ->columnSpanFull(),
+                \Filament\Forms\Components\Select::make('patient_id')
+                    ->relationship('patient', 'name')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
+                \Filament\Forms\Components\Select::make('pathology_test_id')
+                    ->label('Test Type')
+                    ->relationship('pathologyTest', 'test_name')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
+                \Filament\Forms\Components\Select::make('doctor_id')
+                    ->label('Referred By')
+                    ->relationship('doctor', 'name')
+                    ->searchable()
+                    ->preload(),
+                DatePicker::make('test_date')
+                    ->required()
+                    ->native(false),
                 TextInput::make('status')
                     ->required()
-                    ->default('pending'),
-            ]);
+                    ->default('pending')
+                    ->placeholder('pending/completed/reported'),
+                Textarea::make('result')
+                    ->columnSpanFull()
+                    ->rows(3),
+            ])
+            ->columns(2);
     }
 }

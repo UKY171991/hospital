@@ -20,7 +20,8 @@ class MedicineSaleResource extends Resource
 {
     protected static ?string $model = MedicineSale::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
+    protected static string|\UnitEnum|null $navigationGroup = 'Pharmacy';
 
     protected static ?string $recordTitleAttribute = 'id';
 

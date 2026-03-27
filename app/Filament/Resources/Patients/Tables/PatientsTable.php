@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Support\Icons\Heroicon;
 
 class PatientsTable
 {
@@ -16,19 +17,30 @@ class PatientsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->icon(Heroicon::OutlinedPhone),
+                TextColumn::make('email')
+                    ->label('Email address')
+                    ->searchable()
+                    ->icon(Heroicon::OutlinedAtSymbol),
                 TextColumn::make('dob')
-                    ->date()
+                    ->label('Date of Birth')
+                    ->date('M j, Y')
                     ->sortable(),
                 TextColumn::make('gender')
-                    ->searchable(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Male' => 'info',
+                        'Female' => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('blood_group')
-                    ->searchable(),
+                    ->label('Group')
+                    ->badge()
+                    ->color('danger'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

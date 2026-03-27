@@ -20,7 +20,8 @@ class PathologyTestResource extends Resource
 {
     protected static ?string $model = PathologyTest::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBeaker;
+    protected static string|\UnitEnum|null $navigationGroup = 'Pathology';
 
     protected static ?string $recordTitleAttribute = 'test_name';
 

@@ -12,19 +12,27 @@ class MedicineSaleForm
     {
         return $schema
             ->components([
-                TextInput::make('patient_id')
-                    ->numeric(),
-                TextInput::make('medicine_id')
+                \Filament\Forms\Components\Select::make('patient_id')
+                    ->relationship('patient', 'name')
+                    ->searchable()
+                    ->preload(),
+                \Filament\Forms\Components\Select::make('medicine_id')
+                    ->relationship('medicine', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('quantity')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->minValue(1),
                 TextInput::make('total_amount')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('₹'),
                 DatePicker::make('sale_date')
-                    ->required(),
-            ]);
+                    ->required()
+                    ->native(false),
+            ])
+            ->columns(2);
     }
 }

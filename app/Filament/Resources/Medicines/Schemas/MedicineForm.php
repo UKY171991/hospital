@@ -13,20 +13,26 @@ class MedicineForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->placeholder('Paracetamol 500mg'),
                 TextInput::make('category')
-                    ->required(),
+                    ->required()
+                    ->placeholder('Analgesic / Antipyretic'),
                 TextInput::make('manufacturer')
-                    ->required(),
+                    ->required()
+                    ->placeholder('Cipla / GSK'),
                 TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
+                    ->prefix('₹'),
                 TextInput::make('stock_quantity')
+                    ->label('Available Stock')
                     ->required()
                     ->numeric(),
                 DatePicker::make('expiry_date')
-                    ->required(),
-            ]);
+                    ->required()
+                    ->native(false),
+            ])
+            ->columns(2);
     }
 }

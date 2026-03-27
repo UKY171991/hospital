@@ -20,7 +20,16 @@ class PathologyRecordResource extends Resource
 {
     protected static ?string $model = PathologyRecord::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+    protected static string|\UnitEnum|null $navigationGroup = 'Pathology';
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        if (auth()->check() && !auth()->user()->canSeeAllRecords()) {
+            $query->where('user_id', auth()->id());
+        }
+        return $query;
+    }
 
     protected static ?string $recordTitleAttribute = 'id';
 

@@ -13,12 +13,17 @@ class DepartmentForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
-                Textarea::make('description')
-                    ->columnSpanFull(),
+                    ->required()
+                    ->placeholder('Cardiology / Orthopedics'),
                 TextInput::make('status')
                     ->required()
-                    ->default('active'),
-            ]);
+                    ->default('active')
+                    ->placeholder('active/inactive'),
+                Textarea::make('description')
+                    ->columnSpanFull()
+                    ->rows(3)
+                    ->placeholder('Enter department purpose and services...'),
+            ])
+            ->columns(2);
     }
 }

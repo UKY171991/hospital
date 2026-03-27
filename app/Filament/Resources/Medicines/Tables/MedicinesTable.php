@@ -16,20 +16,32 @@ class MedicinesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('category')
-                    ->searchable(),
+                    ->searchable()
+                    ->badge()
+                    ->color('info'),
                 TextColumn::make('manufacturer')
-                    ->searchable(),
+                    ->searchable()
+                    ->color('gray'),
                 TextColumn::make('price')
-                    ->money()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('stock_quantity')
+                    ->label('Stock')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (int $state): string => match (true) {
+                        $state <= 10 => 'danger',
+                        $state <= 50 => 'warning',
+                        default => 'success',
+                    }),
                 TextColumn::make('expiry_date')
-                    ->date()
-                    ->sortable(),
+                    ->date('M Y')
+                    ->sortable()
+                    ->color(fn (string $state): string => \Carbon\Carbon::parse($state)->isPast() ? 'danger' : 'success'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

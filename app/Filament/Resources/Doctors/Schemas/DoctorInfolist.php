@@ -11,21 +11,31 @@ class DoctorInfolist
     {
         return $schema
             ->components([
+                TextEntry::make('name')
+                    ->weight('bold')
+                    ->size('lg'),
                 TextEntry::make('department_id')
-                    ->numeric(),
-                TextEntry::make('name'),
+                    ->numeric()
+                    ->label('Department ID'),
                 TextEntry::make('email')
                     ->label('Email address'),
                 TextEntry::make('phone'),
                 TextEntry::make('consultation_fee')
-                    ->numeric(),
-                TextEntry::make('status'),
+                    ->money('INR'),
+                TextEntry::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'danger',
+                        default => 'gray',
+                    }),
                 TextEntry::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d M Y H:i')
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->dateTime()
+                    ->dateTime('d M Y H:i')
                     ->placeholder('-'),
-            ]);
+            ])
+            ->columns(2);
     }
 }

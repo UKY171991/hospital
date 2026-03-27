@@ -20,7 +20,8 @@ class DepartmentResource extends Resource
 {
     protected static ?string $model = Department::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquare2Stack;
+    protected static string|\UnitEnum|null $navigationGroup = 'OPD';
 
     protected static ?string $recordTitleAttribute = 'name';
 

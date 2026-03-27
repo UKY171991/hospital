@@ -16,14 +16,17 @@ class PathologyTestsTable
         return $table
             ->columns([
                 TextColumn::make('test_name')
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('category')
+                    ->badge()
+                    ->color('primary')
                     ->searchable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->money('INR')
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
