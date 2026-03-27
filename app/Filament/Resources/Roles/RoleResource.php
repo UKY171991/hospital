@@ -29,12 +29,15 @@ class RoleResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Grid::make(12)
+            Section::make('Role Identity')
+                ->description('Define the basic identity and global access rules for this role.')
+                ->icon('heroicon-o-identification')
                 ->schema([
-                    Section::make('Type Info')
+                    Grid::make(3)
                         ->schema([
                             TextInput::make('name')
-                                ->label('Type Name')
+                                ->label('Role Title')
+                                ->placeholder('e.g. Senior Pathologist')
                                 ->required()
                                 ->unique(ignoreRecord: true),
                             Select::make('status')
@@ -42,21 +45,25 @@ class RoleResource extends Resource
                                     'Active' => 'Active',
                                     'Inactive' => 'Inactive',
                                 ])
+                                ->native(false)
                                 ->default('Active')
                                 ->required(),
-                            Checkbox::make('view_all_records')
-                                ->label('View All Data')
-                                ->inline(true),
-                        ])
-                        ->columnSpan(3),
+                            \Filament\Forms\Components\Toggle::make('view_all_records')
+                                ->label('Global Data Access')
+                                ->helperText('Check this to allow viewing all records regardless of ownership.')
+                                ->onIcon('heroicon-m-shield-check')
+                                ->offIcon('heroicon-m-shield-exclamation')
+                                ->inline(false),
+                        ]),
+                ]),
 
-                    Section::make('Page Permissions')
-                        ->schema([
-                            ViewField::make('permissions_table')
-                                ->view('filament.forms.components.permission-table')
-                                ->columnSpanFull(),
-                        ])
-                        ->columnSpan(9),
+            Section::make('Role Permissions')
+                ->description('Configure granular access controls for each medical module.')
+                ->icon('heroicon-o-lock-closed')
+                ->schema([
+                    ViewField::make('permissions_table')
+                        ->view('filament.forms.components.permission-table')
+                        ->columnSpanFull(),
                 ]),
         ]);
     }
