@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medicine_sales', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('patient_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('medicine_id')->constrained()->cascadeOnDelete();
-            $table->integer('quantity');
-            $table->decimal('total_amount', 10, 2);
-            $table->date('sale_date');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('medicine_sales')) {
+            Schema::create('medicine_sales', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('patient_id')->nullable()->constrained()->onDelete('set null');
+                $table->foreignId('medicine_id')->constrained()->cascadeOnDelete();
+                $table->integer('quantity');
+                $table->decimal('total_amount', 10, 2);
+                $table->date('sale_date');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
