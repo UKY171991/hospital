@@ -55,7 +55,8 @@ class RoleResource extends Resource
                                 ->offIcon('heroicon-m-shield-exclamation')
                                 ->inline(false),
                         ]),
-                ]),
+                ])
+                ->columnSpanFull(),
 
             Section::make('Role Permissions')
                 ->description('Configure granular access controls for each medical module.')
@@ -64,7 +65,8 @@ class RoleResource extends Resource
                     ViewField::make('permissions_table')
                         ->view('filament.forms.components.permission-table')
                         ->columnSpanFull(),
-                ]),
+                ])
+                ->columnSpanFull(),
         ]);
     }
 
