@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('patients', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->nullable();
-            $table->string('phone');
-            $table->date('dob');
-            $table->string('gender');
-            $table->text('address')->nullable();
-            $table->string('blood_group')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('patients')) {
+            Schema::create('patients', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->nullable();
+                $table->string('phone');
+                $table->date('dob');
+                $table->string('gender');
+                $table->text('address')->nullable();
+                $table->string('blood_group')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
