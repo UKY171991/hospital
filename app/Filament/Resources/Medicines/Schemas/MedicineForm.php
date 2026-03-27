@@ -15,12 +15,24 @@ class MedicineForm
                 TextInput::make('name')
                     ->required()
                     ->placeholder('Paracetamol 500mg'),
-                TextInput::make('category')
+                \Filament\Forms\Components\Select::make('medicine_category_id')
+                    ->label('Category')
+                    ->relationship('category', 'name')
                     ->required()
-                    ->placeholder('Analgesic / Antipyretic'),
-                TextInput::make('manufacturer')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')->required()->unique('medicine_categories', 'name'),
+                    ]),
+                \Filament\Forms\Components\Select::make('medicine_manufacturer_id')
+                    ->label('Manufacturer')
+                    ->relationship('manufacturer', 'name')
                     ->required()
-                    ->placeholder('Cipla / GSK'),
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')->required()->unique('medicine_manufacturers', 'name'),
+                    ]),
                 TextInput::make('price')
                     ->required()
                     ->numeric()

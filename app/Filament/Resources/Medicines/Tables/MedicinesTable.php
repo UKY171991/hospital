@@ -18,13 +18,17 @@ class MedicinesTable
                 TextColumn::make('name')
                     ->weight('bold')
                     ->searchable(),
-                TextColumn::make('category')
+                TextColumn::make('category.name')
+                    ->label('Category')
                     ->searchable()
                     ->badge()
-                    ->color('info'),
-                TextColumn::make('manufacturer')
+                    ->color('info')
+                    ->default('Uncategorized'),
+                TextColumn::make('manufacturer.name')
+                    ->label('Manufacturer')
                     ->searchable()
-                    ->color('gray'),
+                    ->color('gray')
+                    ->default('Unknown'),
                 TextColumn::make('price')
                     ->money('INR')
                     ->sortable(),
