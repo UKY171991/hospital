@@ -31,6 +31,7 @@ class MedicineForm
                     ->numeric(),
                 DatePicker::make('expiry_date')
                     ->required()
+                    ->default(now())
                     ->native(false),
             ])
             ->columns(2);

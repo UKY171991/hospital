@@ -34,6 +34,7 @@ class PathologyRecordForm
                     ->preload(),
                 DatePicker::make('test_date')
                     ->required()
+                    ->default(now())
                     ->native(false),
                 TextInput::make('status')
                     ->required()

@@ -31,6 +31,7 @@ class MedicineSaleForm
                     ->prefix('₹'),
                 DatePicker::make('sale_date')
                     ->required()
+                    ->default(now())
                     ->native(false),
             ])
             ->columns(2);
