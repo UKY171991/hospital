@@ -26,7 +26,7 @@ class StatsOverview extends BaseWidget
                 ->description('Scheduled visits')
                 ->descriptionIcon('heroicon-m-calendar-days')
                 ->color('warning'),
-            Stat::make('Pharmacy Sales', '₹' . number_format(MedicineSale::sum('total_price'), 2))
+            Stat::make('Pharmacy Sales', '₹' . number_format(MedicineSale::sum('total_amount'), 2))
                 ->description('Total revenue')
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->color('primary'),
