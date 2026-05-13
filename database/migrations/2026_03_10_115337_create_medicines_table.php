@@ -13,15 +13,15 @@ return new class extends Migration
     {
         if (!Schema::hasTable('medicines')) {
             Schema::create('medicines', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('category');
-                $table->string('manufacturer');
-                $table->decimal('price', 10, 2);
-                $table->integer('stock_quantity');
-                $table->date('expiry_date');
-                $table->timestamps();
-            });
+            $table->id();
+            $table->string('name');
+            $table->string('category');
+            $table->string('manufacturer');
+            $table->decimal('price', 10, 2);
+            $table->integer('stock_quantity');
+            $table->date('expiry_date');
+            $table->timestamps();
+        });
         }
     }
 

@@ -13,14 +13,14 @@ return new class extends Migration
     {
         if (!Schema::hasTable('appointments')) {
             Schema::create('appointments', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('patient_id')->constrained()->cascadeOnDelete();
-                $table->foreignId('doctor_id')->constrained()->cascadeOnDelete();
-                $table->dateTime('appointment_date');
-                $table->text('reason')->nullable();
-                $table->string('status')->default('pending');
-                $table->timestamps();
-            });
+            $table->id();
+            $table->foreignId('patient_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('doctor_id')->constrained()->cascadeOnDelete();
+            $table->dateTime('appointment_date');
+            $table->text('reason')->nullable();
+            $table->string('status')->default('pending');
+            $table->timestamps();
+        });
         } else {
             Schema::table('appointments', function (Blueprint $table) {
                 if (!Schema::hasColumn('appointments', 'patient_id')) {

@@ -13,15 +13,15 @@ return new class extends Migration
     {
         if (!Schema::hasTable('pathology_records')) {
             Schema::create('pathology_records', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('patient_id')->constrained()->cascadeOnDelete();
-                $table->foreignId('pathology_test_id')->constrained()->cascadeOnDelete();
-                $table->foreignId('doctor_id')->nullable()->constrained()->onDelete('set null');
-                $table->date('test_date');
-                $table->text('result')->nullable();
-                $table->string('status')->default('pending');
-                $table->timestamps();
-            });
+            $table->id();
+            $table->foreignId('patient_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('pathology_test_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('doctor_id')->nullable()->constrained()->onDelete('set null');
+            $table->date('test_date');
+            $table->text('result')->nullable();
+            $table->string('status')->default('pending');
+            $table->timestamps();
+        });
         }
     }
 

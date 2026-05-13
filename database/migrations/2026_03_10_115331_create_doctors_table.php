@@ -13,15 +13,15 @@ return new class extends Migration
     {
         if (!Schema::hasTable('doctors')) {
             Schema::create('doctors', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('department_id')->constrained()->cascadeOnDelete();
-                $table->string('name');
-                $table->string('email')->unique();
-                $table->string('phone');
-                $table->decimal('consultation_fee', 10, 2);
-                $table->string('status')->default('active');
-                $table->timestamps();
-            });
+            $table->id();
+            $table->foreignId('department_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('phone');
+            $table->decimal('consultation_fee', 10, 2);
+            $table->string('status')->default('active');
+            $table->timestamps();
+        });
         } else {
             Schema::table('doctors', function (Blueprint $table) {
                 if (!Schema::hasColumn('doctors', 'department_id')) {

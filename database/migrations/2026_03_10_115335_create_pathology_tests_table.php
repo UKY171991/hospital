@@ -13,13 +13,13 @@ return new class extends Migration
     {
         if (!Schema::hasTable('pathology_tests')) {
             Schema::create('pathology_tests', function (Blueprint $table) {
-                $table->id();
-                $table->string('test_name');
-                $table->string('category');
-                $table->text('normal_range')->nullable();
-                $table->decimal('price', 10, 2);
-                $table->timestamps();
-            });
+            $table->id();
+            $table->string('test_name');
+            $table->string('category');
+            $table->text('normal_range')->nullable();
+            $table->decimal('price', 10, 2);
+            $table->timestamps();
+        });
         }
     }
 

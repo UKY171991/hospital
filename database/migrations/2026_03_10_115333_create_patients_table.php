@@ -13,16 +13,16 @@ return new class extends Migration
     {
         if (!Schema::hasTable('patients')) {
             Schema::create('patients', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('email')->nullable();
-                $table->string('phone');
-                $table->date('dob');
-                $table->string('gender');
-                $table->text('address')->nullable();
-                $table->string('blood_group')->nullable();
-                $table->timestamps();
-            });
+            $table->id();
+            $table->string('name');
+            $table->string('email')->nullable();
+            $table->string('phone');
+            $table->date('dob');
+            $table->string('gender');
+            $table->text('address')->nullable();
+            $table->string('blood_group')->nullable();
+            $table->timestamps();
+        });
         } else {
             Schema::table('patients', function (Blueprint $table) {
                 if (!Schema::hasColumn('patients', 'name')) {

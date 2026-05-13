@@ -13,12 +13,12 @@ return new class extends Migration
     {
         if (!Schema::hasTable('departments')) {
             Schema::create('departments', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->text('description')->nullable();
-                $table->string('status')->default('active');
-                $table->timestamps();
-            });
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('status')->default('active');
+            $table->timestamps();
+        });
         } else {
             Schema::table('departments', function (Blueprint $table) {
                 if (!Schema::hasColumn('departments', 'name')) {
