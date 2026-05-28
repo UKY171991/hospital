@@ -13,21 +13,26 @@ class MedicineCategoryForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->placeholder('e.g. Analgesic'),
-                Select::make('status')
-                    ->options([
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
-                    ])
-                    ->default('active')
-                    ->required(),
-                Textarea::make('description')
-                    ->columnSpanFull()
-                    ->rows(3),
-            ])
-            ->columns(2);
+                \Filament\Forms\Components\Section::make('Category Details')
+                    ->icon(\Filament\Support\Icons\Heroicon::OutlinedTag)
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->placeholder('e.g. Analgesic')
+                            ->prefixIcon(\Filament\Support\Icons\Heroicon::OutlinedTag),
+                        Select::make('status')
+                            ->options([
+                                'active' => 'Active',
+                                'inactive' => 'Inactive',
+                            ])
+                            ->default('active')
+                            ->required()
+                            ->native(false),
+                        Textarea::make('description')
+                            ->columnSpanFull()
+                            ->rows(3),
+                    ])->columns(2),
+            ]);
     }
 }

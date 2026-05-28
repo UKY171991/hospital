@@ -51,7 +51,20 @@ class PatientsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('gender')
+                    ->options([
+                        'Male' => 'Male',
+                        'Female' => 'Female',
+                        'Other' => 'Other',
+                    ]),
+                \Filament\Tables\Filters\SelectFilter::make('blood_group')
+                    ->label('Blood Group')
+                    ->options([
+                        'A+' => 'A+', 'A-' => 'A-',
+                        'B+' => 'B+', 'B-' => 'B-',
+                        'AB+' => 'AB+', 'AB-' => 'AB-',
+                        'O+' => 'O+', 'O-' => 'O-',
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make(),

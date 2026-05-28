@@ -17,17 +17,21 @@ class DoctorsTable
             ->columns([
                 TextColumn::make('name')
                     ->weight('bold')
-                    ->searchable(),
-                TextColumn::make('department_id')
-                    ->numeric()
+                    ->searchable()
+                    ->prefix('Dr. '),
+                TextColumn::make('department.name')
+                    ->label('Department')
                     ->sortable()
+                    ->badge()
                     ->color('gray'),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->icon(\Filament\Support\Icons\Heroicon::OutlinedAtSymbol),
                 TextColumn::make('phone')
-                    ->searchable(),
+                    ->searchable()
+                    ->icon(\Filament\Support\Icons\Heroicon::OutlinedPhone),
                 TextColumn::make('consultation_fee')
                     ->money('INR')
                     ->sortable(),
@@ -48,7 +52,16 @@ class DoctorsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('department_id')
+                    ->label('Department')
+                    ->relationship('department', 'name')
+                    ->native(false),
+                \Filament\Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
+                    ])
+                    ->native(false),
             ])
             ->recordActions([
                 ViewAction::make(),

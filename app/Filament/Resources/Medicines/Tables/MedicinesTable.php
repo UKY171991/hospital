@@ -56,7 +56,14 @@ class MedicinesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('medicine_category_id')
+                    ->label('Category')
+                    ->relationship('category', 'name')
+                    ->native(false),
+                \Filament\Tables\Filters\SelectFilter::make('medicine_manufacturer_id')
+                    ->label('Manufacturer')
+                    ->relationship('manufacturer', 'name')
+                    ->native(false),
             ])
             ->recordActions([
                 ViewAction::make(),
